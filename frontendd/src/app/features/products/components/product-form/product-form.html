@@ -1,0 +1,237 @@
+<!--  (ngSubmit)="onSubmit()"-->
+
+<form
+  [formGroup]="productForm"
+  class="w-full max-w-xl mx-auto bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
+>
+  <!-- Header -->
+  <div class="px-7 py-6 border-b border-gray-100">
+    <h2 class="text-2xl font-bold text-gray-800">
+      {{ product() ? 'Update Product' : 'Create Product' }}
+    </h2>
+
+    <p class="text-sm text-gray-500 mt-1">
+      {{
+        product()
+          ? 'Update your product information below.'
+          : 'Add a new product to your store.'
+      }}
+    </p>
+  </div>
+
+  <div class="p-7 space-y-6">
+
+    <!-- Product Name -->
+    <div class="space-y-2">
+      <label class="block text-sm font-semibold text-gray-700">
+        Product Name <span class="text-red-500">*</span>
+      </label>
+
+      <input
+        type="text"
+        formControlName="productName"
+        placeholder="Enter product name..."
+        class="w-full px-4 py-3 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+        [class.border-red-500]="
+          productForm.controls.productName.touched &&
+          productForm.controls.productName.invalid
+        "
+      />
+
+      @if (
+        productForm.controls.productName.touched &&
+        productForm.controls.productName.hasError('required')
+        ) {
+        <p class="text-xs text-red-500">Product name is required.</p>
+      }
+
+      @if (
+        productForm.controls.productName.touched &&
+        productForm.controls.productName.hasError('minlength')
+        ) {
+        <p class="text-xs text-red-500">
+          Name must contain at least 3 characters.
+        </p>
+      }
+    </div>
+
+    <!-- Price and Stock -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+      <div class="space-y-2">
+        <label class="block text-sm font-semibold text-gray-700">
+          Unit Price ($) <span class="text-red-500">*</span>
+        </label>
+
+        <input
+          type="number"
+          formControlName="unitPrice"
+          min="0.01"
+          step="0.01"
+          placeholder="0.00"
+          class="w-full px-4 py-3 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 transition"
+        />
+
+        @if (
+          productForm.controls.unitPrice.touched &&
+          productForm.controls.unitPrice.invalid
+          ) {
+          <p class="text-xs text-red-500">
+            Price must be greater than 0.
+          </p>
+        }
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-sm font-semibold text-gray-700">
+          Stock Quantity <span class="text-red-500">*</span>
+        </label>
+
+        <input
+          type="number"
+          formControlName="stockQty"
+          min="1"
+          step="1"
+          placeholder="Enter quantity"
+          class="w-full px-4 py-3 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 transition"
+        />
+
+        @if (
+          productForm.controls.stockQty.touched &&
+          productForm.controls.stockQty.invalid
+          ) {
+          <p class="text-xs text-red-500">
+            Stock must be at least 1.
+          </p>
+        }
+      </div>
+
+    </div>
+
+    <!-- Description -->
+    <div class="space-y-2">
+      <label class="block text-sm font-semibold text-gray-700">
+        Description
+      </label>
+
+      <textarea
+        formControlName="description"
+        rows="4"
+        placeholder="Write product description..."
+        class="w-full px-4 py-3 rounded-xl border border-gray-300 outline-none resize-none focus:ring-2 focus:ring-blue-500 transition"
+      ></textarea>
+    </div>
+
+    <!-- Image Upload -->
+
+    <!-- Image Upload -->
+    <div class="space-y-2">
+      <label class="block text-sm font-semibold text-gray-700">
+        Product Image
+      </label>
+
+      <label
+        for="productImage"
+        class="relative flex flex-col items-center justify-center w-full h-56 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer overflow-hidden hover:border-blue-500 hover:bg-blue-50 transition"
+        [class.border-blue-500]="imagePreview"
+      >
+
+        @if (imagePreview) {
+          <!-- Image Preview -->
+          <img
+            [src]="imagePreview"
+            alt="Product preview"
+            class="absolute inset-0 w-full h-full object-contain bg-gray-50"
+          />
+
+          <!-- Overlay -->
+          <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition">
+            <svg
+              class="w-8 h-8 text-white mb-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16l4-4 4 4 4-4 4 4M4 20h16M12 4v8m-4-4l4-4 4 4"
+              />
+            </svg>
+
+            <span class="text-sm font-semibold text-white">
+          Click to change image
+        </span>
+          </div>
+        } @else {
+          <!-- Empty State -->
+          <svg
+            class="w-10 h-10 text-gray-400 mb-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.7"
+              d="M12 16V4m0 0L8 8m4-4l4 4M4 16v4h16v-4"
+            />
+          </svg>
+
+          <span class="text-sm font-semibold text-gray-700">
+        Click to upload image
+      </span>
+
+          <span class="text-xs text-gray-400 mt-2">
+        PNG or JPG (Maximum 5MB)
+      </span>
+        }
+
+        <input
+          id="productImage"
+          type="file"
+          accept="image/png,image/jpeg"
+          (change)="onImageSelected($event)"
+          class="hidden"
+        />
+      </label>
+
+<!--      @if (imageError) {-->
+<!--        <p class="text-sm text-red-500">{{ imageError }}</p>-->
+<!--      }-->
+
+      @if (selectedFile) {
+        <p class="text-xs text-gray-500">
+          Selected: {{ selectedFile.name }}
+        </p>
+      }
+    </div>
+
+
+  </div>
+
+  <!-- Footer Buttons -->
+  <div class="flex justify-end gap-3 px-7 py-5 bg-gray-50 border-t border-gray-100">
+    <!--      (click)="resetForm()"-->
+    <button
+      [disabled]="product()===null || productForm.invalid"
+      (click)="reSetClick()"
+      type="button"
+      class="px-5 py-2.5 rounded-xl border disabled:bg-gray-300 border-gray-300 text-gray-600 font-semibold hover:bg-gray-100 transition"
+    >
+      Reset
+    </button>
+
+    <button
+      type="submit"
+      [disabled]="productForm.invalid"
+      (click)="submitClick()"
+      class="px-6 py-2.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+    >
+      {{ product() ? 'Update Product' : 'Create Product' }}
+    </button>
+
+  </div>
+</form>
