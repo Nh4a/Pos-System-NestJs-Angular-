@@ -1,119 +1,513 @@
-<div class="max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
-  <app-product-form (onSubmit)="productService.onSubmit($event)" [product]="productService.productForm"
-    (onReset)="productService.onResetForm()"></app-product-form>
+<main class="flex-1 flex flex-col overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 w-full" data-purpose="product-catalog-section">
+  <div class="flex flex-col w-full space-y-6 max-w-7xl mx-auto">
+    <!-- Top Action & Overview Area -->
+    <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-[11px] font-bold tracking-wider uppercase text-emerald-800 bg-[#E7F7F0] px-2.5 py-0.5 rounded-full border border-emerald-200/60">
+            Inventory Control
+          </span>
+          <span class="text-xs text-slate-400">• Realtime Sync</span>
+        </div>
+        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight mt-1">
+          Product Inventory &amp; Catalog
+        </h1>
+        <p class="text-xs text-slate-500 font-medium mt-0.5">
+          Manage item variations, live quantities, cost margins, and register availability
+        </p>
+      </div>
 
-  @if (productService.isSubmitting()) {
-  <app-loading></app-loading>
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-2.5 self-start xl:self-auto flex-wrap">
+        <a
+          routerLink="/pos"
+          class="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#002B24] hover:bg-[#00382E] text-white font-bold text-xs shadow-md shadow-emerald-950/20 transition active:scale-95 cursor-pointer"
+        >
+          <span class="material-symbols-outlined text-base text-emerald-400">point_of_sale</span>
+          <span>Open POS Terminal</span>
+        </a>
+
+        <button
+          type="button"
+          class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white text-slate-700 font-semibold text-xs border border-slate-200/80 shadow-2xs hover:bg-slate-50 transition active:scale-95 cursor-pointer"
+        >
+          <span class="material-symbols-outlined text-base text-slate-500">checklist</span>
+          <span>Bulk Actions</span>
+        </button>
+
+        <button
+          type="button"
+          class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white text-slate-700 font-semibold text-xs border border-slate-200/80 shadow-2xs hover:bg-slate-50 transition active:scale-95 cursor-pointer"
+        >
+          <span class="material-symbols-outlined text-base text-slate-500">swap_vert</span>
+          <span>Import / Export</span>
+        </button>
+
+        <button
+          (click)="openCreate()"
+          type="button"
+          class="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#00B074] hover:bg-[#009763] text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition active:scale-95 cursor-pointer"
+        >
+          <span class="material-symbols-outlined text-base">add</span>
+          <span>Add New Product</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI Quick Stats Mosaic -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Total Products -->
+      <div class="relative overflow-hidden rounded-2xl bg-white p-4.5 border border-slate-200/80 shadow-xs">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-semibold text-slate-400">Total Products</p>
+            <h3 class="text-2xl font-extrabold text-slate-900 mt-1">{{ totalProductsCount() }}</h3>
+            <div class="flex items-center gap-1 mt-2 text-[11px] font-semibold text-emerald-600">
+              <span class="material-symbols-outlined text-sm">trending_up</span>
+              <span>In active catalog</span>
+            </div>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#00B074] flex items-center justify-center">
+            <span class="material-symbols-outlined text-xl">inventory_2</span>
+          </div>
+        </div>
+        <div class="absolute -bottom-3 -right-3 w-16 h-16 bg-emerald-500/5 rounded-full pointer-events-none"></div>
+      </div>
+
+      <!-- Low Stock Alert -->
+      <div class="relative overflow-hidden rounded-2xl bg-white p-4.5 border border-slate-200/80 shadow-xs">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-semibold text-slate-400">Low Stock Alert</p>
+            <h3 class="text-2xl font-extrabold text-amber-500 mt-1">
+              {{ lowStockCount() }} <span class="text-xs font-semibold text-slate-400">items</span>
+            </h3>
+            <div class="flex items-center gap-1 mt-2 text-[11px] font-semibold text-amber-600">
+              <span class="material-symbols-outlined text-sm">notification_important</span>
+              <span>Requires reorder soon</span>
+            </div>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center">
+            <span class="material-symbols-outlined text-xl">warning</span>
+          </div>
+        </div>
+        <div class="absolute -bottom-3 -right-3 w-16 h-16 bg-amber-500/5 rounded-full pointer-events-none"></div>
+      </div>
+
+      <!-- Out of Stock -->
+      <div class="relative overflow-hidden rounded-2xl bg-white p-4.5 border border-slate-200/80 shadow-xs">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-semibold text-slate-400">Out of Stock</p>
+            <h3 class="text-2xl font-extrabold text-rose-500 mt-1">
+              {{ outOfStockCount() }} <span class="text-xs font-semibold text-slate-400">items</span>
+            </h3>
+            <div class="flex items-center gap-1 mt-2 text-[11px] font-semibold text-rose-500">
+              <span class="material-symbols-outlined text-sm">block</span>
+              <span>Disabled in register</span>
+            </div>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center">
+            <span class="material-symbols-outlined text-xl">production_quantity_limits</span>
+          </div>
+        </div>
+        <div class="absolute -bottom-3 -right-3 w-16 h-16 bg-rose-500/5 rounded-full pointer-events-none"></div>
+      </div>
+
+      <!-- Categories -->
+      <div class="relative overflow-hidden rounded-2xl bg-white p-4.5 border border-slate-200/80 shadow-xs">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-semibold text-slate-400">Categories</p>
+            <h3 class="text-2xl font-extrabold text-[#002B24] mt-1">3</h3>
+            <div class="flex items-center gap-1 mt-2 text-[11px] font-semibold text-slate-500 truncate">
+              <span class="material-symbols-outlined text-sm">category</span>
+              <span>Foods, Beverages, Others</span>
+            </div>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center">
+            <span class="material-symbols-outlined text-xl">dashboard_customize</span>
+          </div>
+        </div>
+        <div class="absolute -bottom-3 -right-3 w-16 h-16 bg-slate-900/5 rounded-full pointer-events-none"></div>
+      </div>
+    </div>
+
+    <!-- Search, Filter Pills & View Switches -->
+    <div class="bg-white p-4.5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col gap-4">
+      <!-- Top Row: Search & Category Pills -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <!-- Search Input -->
+        <div class="relative flex-1 max-w-md">
+          <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+          <input
+            [value]="searchQuery()"
+            (input)="onSearchInput($event)"
+            class="w-full bg-slate-50 border border-slate-200/80 text-slate-800 text-xs rounded-xl pl-10 pr-4 py-2.5 font-medium placeholder-slate-400 focus:ring-2 focus:ring-[#00B074] focus:bg-white outline-none transition"
+            placeholder="Search by product name, SKU, or description..."
+            type="text"
+          />
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 text-xs">
+          <button
+            type="button"
+            (click)="setCategory('all')"
+            [class.bg-[#002B24]]="selectedCategory() === 'all'"
+            [class.text-white]="selectedCategory() === 'all'"
+            [class.bg-slate-100]="selectedCategory() !== 'all'"
+            [class.text-slate-600]="selectedCategory() !== 'all'"
+            class="px-3.5 py-1.5 rounded-full font-semibold transition shadow-xs cursor-pointer"
+          >
+            All Products ({{ totalProductsCount() }})
+          </button>
+          <button
+            type="button"
+            (click)="setCategory('foods')"
+            [class.bg-[#002B24]]="selectedCategory() === 'foods'"
+            [class.text-white]="selectedCategory() === 'foods'"
+            [class.bg-slate-100]="selectedCategory() !== 'foods'"
+            [class.text-slate-600]="selectedCategory() !== 'foods'"
+            class="px-3.5 py-1.5 rounded-full font-semibold transition cursor-pointer"
+          >
+            Foods ({{ foodsCount() }})
+          </button>
+          <button
+            type="button"
+            (click)="setCategory('beverages')"
+            [class.bg-[#002B24]]="selectedCategory() === 'beverages'"
+            [class.text-white]="selectedCategory() === 'beverages'"
+            [class.bg-slate-100]="selectedCategory() !== 'beverages'"
+            [class.text-slate-600]="selectedCategory() !== 'beverages'"
+            class="px-3.5 py-1.5 rounded-full font-semibold transition cursor-pointer"
+          >
+            Beverages ({{ beveragesCount() }})
+          </button>
+          <button
+            type="button"
+            (click)="setCategory('others')"
+            [class.bg-[#002B24]]="selectedCategory() === 'others'"
+            [class.text-white]="selectedCategory() === 'others'"
+            [class.bg-slate-100]="selectedCategory() !== 'others'"
+            [class.text-slate-600]="selectedCategory() !== 'others'"
+            class="px-3.5 py-1.5 rounded-full font-semibold transition cursor-pointer"
+          >
+            Others ({{ othersCount() }})
+          </button>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Filter Dropdowns & View Mode Switch -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-100 text-xs">
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <!-- Stock Filter -->
+          <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200/80 px-3 py-1.5 rounded-xl font-medium text-slate-600">
+            <span class="text-slate-400 text-[11px]">Stock Status:</span>
+            <select
+              [value]="stockFilter()"
+              (change)="onStockFilterChange($event)"
+              class="bg-transparent border-0 p-0 text-xs font-semibold text-slate-800 focus:ring-0 cursor-pointer outline-none"
+            >
+              <option value="all">All Stock Levels</option>
+              <option value="in-stock">In Stock (&gt;5)</option>
+              <option value="low-stock">Low Stock (≤5)</option>
+              <option value="out-of-stock">Out of Stock (0)</option>
+            </select>
+          </div>
+
+          <!-- Sort Filter -->
+          <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200/80 px-3 py-1.5 rounded-xl font-medium text-slate-600">
+            <span class="text-slate-400 text-[11px]">Sort By:</span>
+            <select
+              [value]="sortBy()"
+              (change)="onSortChange($event)"
+              class="bg-transparent border-0 p-0 text-xs font-semibold text-slate-800 focus:ring-0 cursor-pointer outline-none"
+            >
+              <option value="name">Product Name (A-Z)</option>
+              <option value="stock-high">Highest Stock</option>
+              <option value="stock-low">Lowest Stock</option>
+              <option value="price-high">Price (High to Low)</option>
+              <option value="price-low">Price (Low to High)</option>
+            </select>
+          </div>
+
+          <button
+            type="button"
+            (click)="resetFilters()"
+            class="flex items-center gap-1 text-slate-400 hover:text-slate-700 px-2 py-1 text-xs transition cursor-pointer"
+          >
+            <span class="material-symbols-outlined text-sm">filter_alt_off</span>
+            <span>Reset Filters</span>
+          </button>
+        </div>
+
+        <!-- View Mode Switch -->
+        <div class="flex items-center gap-3">
+          <span class="text-slate-400 text-[11px] font-medium hidden md:inline">
+            Showing {{ filteredProducts().length }} of {{ totalProductsCount() }} items
+          </span>
+          <div class="flex items-center bg-slate-100 p-0.5 rounded-xl">
+            <button
+              type="button"
+              (click)="setViewMode('table')"
+              [class.bg-white]="viewMode() === 'table'"
+              [class.text-[#002B24]]="viewMode() === 'table'"
+              [class.shadow-xs]="viewMode() === 'table'"
+              [class.text-slate-500]="viewMode() !== 'table'"
+              class="px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1 transition cursor-pointer"
+              title="Table View"
+            >
+              <span class="material-symbols-outlined text-sm">table_rows</span>
+              <span class="text-[11px]">Table</span>
+            </button>
+            <button
+              type="button"
+              (click)="setViewMode('cards')"
+              [class.bg-white]="viewMode() === 'cards'"
+              [class.text-[#002B24]]="viewMode() === 'cards'"
+              [class.shadow-xs]="viewMode() === 'cards'"
+              [class.text-slate-500]="viewMode() !== 'cards'"
+              class="px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1 transition cursor-pointer"
+              title="Grid View"
+            >
+              <span class="material-symbols-outlined text-sm">grid_view</span>
+              <span class="text-[11px]">Cards</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN INVENTORY VIEW (TABLE OR CARDS) -->
+    @if (viewMode() === 'table') {
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden flex flex-col">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50/80 text-[11px] uppercase tracking-wider text-slate-500 font-bold border-b border-slate-200/80">
+                <th class="py-3 px-4 w-10 text-center">
+                  <input class="rounded text-[#00B074] focus:ring-0 border-slate-300 w-4 h-4 cursor-pointer" type="checkbox" />
+                </th>
+                <th class="py-3 px-4">Product Details</th>
+                <th class="py-3 px-4">Category</th>
+                <th class="py-3 px-4">Price / Cost</th>
+                <th class="py-3 px-4">Stock Level</th>
+                <th class="py-3 px-4 text-center">Status</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-xs font-medium text-slate-700">
+              @for (item of filteredProducts(); let index = $index; track item.id || index) {
+                <tr class="hover:bg-slate-50/70 transition group">
+                  <td class="py-3.5 px-4 text-center">
+                    <input class="rounded text-[#00B074] focus:ring-0 border-slate-300 w-4 h-4 cursor-pointer" type="checkbox" />
+                  </td>
+
+                  <!-- Product details: Image + Title + SKU -->
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-3">
+                      <img
+                        [src]="item.imageUrl || 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=100&auto=format&fit=crop&q=60'"
+                        [alt]="item.productName"
+                        class="w-11 h-11 rounded-xl object-cover shadow-2xs border border-slate-100 flex-shrink-0"
+                      />
+                      <div class="min-w-0">
+                        <div class="font-bold text-slate-900 group-hover:text-emerald-700 transition truncate max-w-xs">
+                          {{ item.productName }}
+                        </div>
+                        <div class="flex items-center gap-2 text-[11px] text-slate-400 mt-0.5">
+                          <span>SKU: #SP-{{ 1000 + item.id }}</span>
+                          <span>•</span>
+                          <span class="font-mono text-slate-500">ID: {{ item.id }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Category -->
+                  <td class="py-3.5 px-4">
+                    <span
+                      class="px-2.5 py-1 rounded-md text-[11px] font-semibold"
+                      [class.bg-emerald-50]="getProductCategory(item) === 'Foods'"
+                      [class.text-emerald-800]="getProductCategory(item) === 'Foods'"
+                      [class.bg-blue-50]="getProductCategory(item) === 'Beverages'"
+                      [class.text-blue-800]="getProductCategory(item) === 'Beverages'"
+                      [class.bg-slate-100]="getProductCategory(item) === 'Others'"
+                      [class.text-slate-700]="getProductCategory(item) === 'Others'"
+                    >
+                      {{ getProductCategory(item) }}
+                    </span>
+                  </td>
+
+                  <!-- Price / Cost -->
+                  <td class="py-3.5 px-4">
+                    <div class="font-bold text-slate-900">${{ item.unitPrice | number: '1.2-2' }}</div>
+                    <div class="text-[11px] text-slate-400 font-medium">
+                      Est. Cost: ${{ (item.unitPrice * 0.45) | number: '1.2-2' }}
+                    </div>
+                  </td>
+
+                  <!-- Stock Level with bar -->
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-2">
+                      <span class="font-bold text-slate-900">{{ item.stockQty }}</span>
+                      <span class="text-slate-400 text-[11px]">units</span>
+                    </div>
+                    <div class="w-24 bg-slate-100 rounded-full h-1.5 mt-1 overflow-hidden">
+                      <div
+                        class="h-full rounded-full"
+                        [class.bg-[#00B074]]="item.stockQty > 5"
+                        [class.bg-amber-400]="item.stockQty > 0 && item.stockQty <= 5"
+                        [class.bg-rose-500]="item.stockQty === 0"
+                        [style.width.%]="item.stockQty > 20 ? 100 : item.stockQty * 5"
+                      ></div>
+                    </div>
+                  </td>
+
+                  <!-- Status Chip -->
+                  <td class="py-3.5 px-4 text-center">
+                    @if (item.stockQty > 5) {
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/50">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#00B074]"></span>
+                        In Stock
+                      </span>
+                    } @else if (item.stockQty > 0) {
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/50">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                        Low Stock
+                      </span>
+                    } @else {
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/50">
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                        Out of Stock
+                      </span>
+                    }
+                  </td>
+
+                  <!-- Action Buttons -->
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <!-- Edit Button -->
+                      <button
+                        (click)="openEdit(item)"
+                        type="button"
+                        class="p-1.5 rounded-xl text-slate-500 hover:text-emerald-700 hover:bg-emerald-50 transition active:scale-90 cursor-pointer"
+                        title="Edit product"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a2.25 2.25 0 1 1 3.182 3.182l-9.88 9.88a4.5 4.5 0 0 1-1.897 1.13l-3.17.906.906-3.17a4.5 4.5 0 0 1 1.13-1.897l8.042-8.343Z" />
+                        </svg>
+                      </button>
+
+                      <!-- Delete Button -->
+                      <button
+                        (click)="productService.onDelete(item.id)"
+                        type="button"
+                        class="p-1.5 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition active:scale-90 cursor-pointer"
+                        title="Delete product"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="7" class="py-14 text-center">
+                    <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-3 text-slate-400">
+                      <span class="material-symbols-outlined text-2xl">search_off</span>
+                    </div>
+                    <p class="font-bold text-slate-700 text-sm">No products found</p>
+                    <p class="text-xs text-slate-400 mt-1">Try another filter or search keyword.</p>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    } @else {
+      <!-- CARDS GRID VIEW -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        @for (item of filteredProducts(); track item.id) {
+          <div class="product-card bg-white rounded-2xl border border-slate-200/80 p-4 relative flex flex-col justify-between shadow-xs">
+            <!-- Top Status Chip -->
+            <span
+              class="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-xs"
+              [class.bg-[#00B074]]="item.stockQty > 5"
+              [class.text-white]="item.stockQty > 5"
+              [class.bg-amber-400]="item.stockQty > 0 && item.stockQty <= 5"
+              [class.text-amber-950]="item.stockQty > 0 && item.stockQty <= 5"
+              [class.bg-rose-500]="item.stockQty === 0"
+              [class.text-white]="item.stockQty === 0"
+            >
+              {{ item.stockQty === 0 ? 'Out of Stock' : (item.stockQty <= 5 ? 'Low Stock (' + item.stockQty + ')' : item.stockQty + ' in stock') }}
+            </span>
+
+            <!-- Image -->
+            <div class="h-32 w-full rounded-xl overflow-hidden mb-3 bg-slate-50 flex items-center justify-center">
+              <img
+                [src]="item.imageUrl || 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=300&auto=format&fit=crop&q=60'"
+                [alt]="item.productName"
+                class="h-full w-full object-cover"
+              />
+            </div>
+
+            <!-- Title & Category -->
+            <div>
+              <div class="text-[10px] uppercase font-bold text-slate-400">{{ getProductCategory(item) }}</div>
+              <h3 class="text-xs font-bold text-slate-800 truncate mt-0.5" [title]="item.productName">
+                {{ item.productName }}
+              </h3>
+              <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
+                <span class="text-sm font-extrabold text-slate-900">${{ item.unitPrice | number: '1.2-2' }}</span>
+                <div class="flex items-center gap-1">
+                  <button
+                    (click)="openEdit(item)"
+                    type="button"
+                    class="p-1 rounded-lg text-slate-500 hover:text-emerald-700 hover:bg-emerald-50 transition cursor-pointer"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a2.25 2.25 0 1 1 3.182 3.182l-9.88 9.88a4.5 4.5 0 0 1-1.897 1.13l-3.17.906.906-3.17a4.5 4.5 0 0 1 1.13-1.897l8.042-8.343Z" />
+                    </svg>
+                  </button>
+                  <button
+                    (click)="productService.onDelete(item.id)"
+                    type="button"
+                    class="p-1 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- PRODUCT FORM MODAL DIALOG -->
+  @if (isFormModalOpen()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
+      <div class="relative w-full max-w-xl">
+        <app-product-form
+          [product]="productService.productForm"
+          (onSubmit)="handleFormSubmit($event)"
+          (onReset)="productService.onResetForm()"
+          (onClose)="closeModal()"
+        ></app-product-form>
+      </div>
+    </div>
   }
 
-  <div class="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-    <!-- Header -->
-    <div class="border-b border-slate-200 px-6 py-5 flex items-center justify-between">
-      <div>
-        <h2 class="text-xl font-bold text-slate-800">Products Catalog</h2>
-        <p class="mt-1 text-sm text-slate-500">Manage and view all inventory products.</p>
-      </div>
-      <div class="rounded-xl bg-indigo-50 px-3.5 py-1.5 text-xs font-bold text-indigo-700 border border-indigo-100">
-        {{ productService.getAllProducts().length }} total products
-      </div>
-    </div>
-
-    <!-- Table -->
-    <div class="w-full overflow-x-auto">
-      <table class="w-full min-w-[650px] text-left text-sm">
-        <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500 border-b border-slate-200">
-          <tr>
-            <th class="px-6 py-4 font-semibold">No.</th>
-            <th class="px-6 py-4 font-semibold">Product</th>
-            <th class="px-6 py-4 font-semibold">Description</th>
-            <th class="px-6 py-4 font-semibold">Unit Price</th>
-            <th class="px-6 py-4 font-semibold">Stock Quantity</th>
-            <th class="px-6 py-4 text-center font-semibold">Image</th>
-            <th class="px-6 py-4 text-center font-semibold">Action</th>
-          </tr>
-        </thead>
-
-        <tbody class="divide-y divide-slate-100">
-          @for (item of productService.getAllProducts(); let index = $index; track item.id || index) {
-          <tr class="transition-colors hover:bg-slate-50/80">
-            <td class="px-6 py-4 font-medium text-slate-400">
-              {{ index + 1 }}
-            </td>
-
-            <td class="px-6 py-4 font-bold text-slate-800">
-              {{ item?.productName }}
-            </td>
-
-            <td class="max-w-xs px-6 py-4 text-slate-600">
-              <p class="line-clamp-2 text-xs">
-                {{ item?.description || 'No description available' }}
-              </p>
-            </td>
-
-            <td class="px-6 py-4 font-bold text-slate-900">
-              ${{ item?.unitPrice | number: '1.2-2' }}
-            </td>
-
-            <td class="px-6 py-4">
-              <!-- <span [class.bg-emerald-50]="item.stockQty > 5" [class.text-emerald-700]="item?.stockQty > 5"
-                [class.border-emerald-200]="item.stockQty > 5"
-                [class.bg-amber-50]="item.stockQty > 0 && item?.stockQty <= 5"
-                [class.text-amber-700]="item.stockQty > 0 && item?.stockQty <= 5"
-                [class.border-amber-200]="item.stockQty > 0 && item?.stockQty <= 5"
-                [class.bg-rose-50]="item.stockQty === 0" [class.text-rose-700]="item?.stockQty === 0"
-                [class.border-rose-200]="item?.stockQty === 0"
-                class="inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-semibold border">
-                -->{{ item?.stockQty }} in stock
-              <!-- </span>  -->
-            </td>
-
-            <td class="px-6 py-3">
-              <div class="flex justify-center">
-                <img [src]="
-                      item?.imageUrl ??
-                      'https://static.vecteezy.com/system/resources/thumbnails/022/059/000/small_2x/no-image-available-icon-vector.jpg'
-                    " [alt]="item?.productName || 'Product image'"
-                  class="h-12 w-12 rounded-xl border border-slate-200 object-cover shadow-2xs" />
-              </div>
-            </td>
-
-            <td class="px-6 py-4">
-              <div class="flex items-center justify-center gap-2">
-                <!-- Update Button -->
-                <button (click)="productService.setUpdateProductToForm(item)" type="button"
-                  class="inline-flex items-center gap-1.5 rounded-xl bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-600 transition hover:bg-blue-100 active:scale-95 border border-blue-100">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                      d="m16.862 4.487 1.687-1.688a2.25 2.25 0 1 1 3.182 3.182l-9.88 9.88a4.5 4.5 0 0 1-1.897 1.13l-3.17.906.906-3.17a4.5 4.5 0 0 1 1.13-1.897l8.042-8.343Z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 7.5 16.5 4.5" />
-                  </svg>
-                  Update
-                </button>
-
-                <!-- Delete Button -->
-                <button (click)="productService.onDelete(item.id)" type="button"
-                  class="inline-flex items-center gap-1.5 rounded-xl bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-100 active:scale-95 border border-rose-100">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M6 7h12m-10 0V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 13h8l1-13M10 11v5m4-5v5" />
-                  </svg>
-                  Delete
-                </button>
-              </div>
-            </td>
-          </tr>
-          } @empty {
-          <tr>
-            <td colspan="7" class="px-6 py-12 text-center">
-              <p class="font-medium text-slate-500">No products found</p>
-              <p class="mt-1 text-sm text-slate-400">Your products will appear here.</p>
-            </td>
-          </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
+  <!-- Loading Overlay -->
+  @if (productService.isSubmitting()) {
+    <app-loading></app-loading>
+  }
+</main>

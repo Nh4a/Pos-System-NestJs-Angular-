@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { PosService } from './services/pos.service';
 import { PosProductCardComponent } from './components/pos-product-card/pos-product-card.component';
 import { PosCartComponent } from './components/pos-cart/pos-cart.component';
@@ -16,6 +17,7 @@ import { ProductSortOption, ProductStockFilter } from './models/pos.model';
   imports: [
     CommonModule,
     FormsModule,
+    RouterLink,
     PosProductCardComponent,
     PosCartComponent,
     PosCheckoutComponent,
@@ -30,6 +32,7 @@ export class PosComponent implements OnInit, OnDestroy {
   public posService = inject(PosService);
 
   public currentTime = signal<string>('');
+  public isMobileCartOpen = signal<boolean>(false);
   private clockInterval: any;
 
   ngOnInit(): void {
@@ -47,11 +50,10 @@ export class PosComponent implements OnInit, OnDestroy {
     const now = new Date();
     this.currentTime.set(
       now.toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
+        month: 'long',
+        day: '2-digit',
+        year: 'numeric',
+        weekday: 'long',
       })
     );
   }
@@ -65,8 +67,13 @@ export class PosComponent implements OnInit, OnDestroy {
     this.posService.searchQuery.set('');
   }
 
-  public setFilter(filter: ProductStockFilter): void {
-    this.posService.stockFilter.set(filter);
+  public setCategory(category: string): void {
+    this.posService.selectedCategory.set(category);
+  }
+
+  public onStockFilterChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.posService.stockFilter.set(target.value as ProductStockFilter);
   }
 
   public setSort(event: Event): void {
@@ -84,5 +91,13 @@ export class PosComponent implements OnInit, OnDestroy {
 
   public refresh(): void {
     this.posService.refreshProducts();
+  }
+
+  public toggleMobileCart(): void {
+    this.isMobileCartOpen.update((open) => !open);
+  }
+
+  public closeMobileCart(): void {
+    this.isMobileCartOpen.set(false);
   }
 }

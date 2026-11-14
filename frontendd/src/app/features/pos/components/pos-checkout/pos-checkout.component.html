@@ -1,15 +1,15 @@
-<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-fadeIn">
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
   <div class="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl border border-slate-100">
     <!-- Header -->
-    <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+    <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-[#002B24] text-white">
       <div>
-        <h3 class="text-lg font-bold text-slate-800">Complete Payment</h3>
-        <p class="text-xs text-slate-400">Select payment method and confirm</p>
+        <h3 class="text-base font-bold text-white">Payment Checkout</h3>
+        <p class="text-xs text-white/70">Select payment method and confirm tender</p>
       </div>
       <button
         type="button"
         (click)="posService.closeCheckout()"
-        class="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
+        class="flex h-8 w-8 items-center justify-center rounded-full text-white/70 hover:bg-[#00382E] hover:text-white transition"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -18,13 +18,13 @@
     </div>
 
     <!-- Amount Due Banner -->
-    <div class="bg-indigo-50/70 px-6 py-5 text-center border-b border-indigo-100">
-      <div class="text-xs font-semibold uppercase tracking-wider text-indigo-600">Total Amount Due</div>
-      <div class="mt-1 text-3xl font-black text-indigo-900">
+    <div class="bg-[#00332B] px-6 py-5 text-center border-b border-[#003d33]">
+      <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Total Amount Due</div>
+      <div class="mt-1 text-3xl font-black text-white">
         ${{ posService.total() | number: '1.2-2' }}
       </div>
-      <div class="mt-1 text-xs text-indigo-500">
-        {{ posService.cartItemCount() }} items in this order
+      <div class="mt-1 text-xs text-white/60">
+        {{ posService.cartItemCount() }} items • Customer: {{ posService.selectedCustomer() }}
       </div>
     </div>
 
@@ -39,12 +39,12 @@
           <button
             type="button"
             (click)="selectMethod('cash')"
-            [class.border-indigo-600]="selectedMethod() === 'cash'"
-            [class.bg-indigo-50]="selectedMethod() === 'cash'"
-            [class.text-indigo-700]="selectedMethod() === 'cash'"
+            [class.border-[#00B074]]="selectedMethod() === 'cash'"
+            [class.bg-[#E7F7F0]]="selectedMethod() === 'cash'"
+            [class.text-[#00B074]]="selectedMethod() === 'cash'"
             [class.border-slate-200]="selectedMethod() !== 'cash'"
             [class.text-slate-600]="selectedMethod() !== 'cash'"
-            class="flex flex-col items-center justify-center rounded-2xl border-2 p-3 transition hover:border-indigo-400 active:scale-95"
+            class="flex flex-col items-center justify-center rounded-2xl border-2 p-3 transition hover:border-[#00B074] active:scale-95 cursor-pointer"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6H2.25m0 0v10.5m0-10.5h19.5m-19.5 0v10.5m19.5-10.5v10.5m0-10.5h-1.5a.75.75 0 0 0-.75.75v.75m2.25 9H2.25m19.5 0v.75c0 .754-.726 1.294-1.453 1.096A60.07 60.07 0 0 1 4.5 19.5" />
@@ -56,12 +56,12 @@
           <button
             type="button"
             (click)="selectMethod('card')"
-            [class.border-indigo-600]="selectedMethod() === 'card'"
-            [class.bg-indigo-50]="selectedMethod() === 'card'"
-            [class.text-indigo-700]="selectedMethod() === 'card'"
+            [class.border-[#00B074]]="selectedMethod() === 'card'"
+            [class.bg-[#E7F7F0]]="selectedMethod() === 'card'"
+            [class.text-[#00B074]]="selectedMethod() === 'card'"
             [class.border-slate-200]="selectedMethod() !== 'card'"
             [class.text-slate-600]="selectedMethod() !== 'card'"
-            class="flex flex-col items-center justify-center rounded-2xl border-2 p-3 transition hover:border-indigo-400 active:scale-95"
+            class="flex flex-col items-center justify-center rounded-2xl border-2 p-3 transition hover:border-[#00B074] active:scale-95 cursor-pointer"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
@@ -73,12 +73,12 @@
           <button
             type="button"
             (click)="selectMethod('qr')"
-            [class.border-indigo-600]="selectedMethod() === 'qr'"
-            [class.bg-indigo-50]="selectedMethod() === 'qr'"
-            [class.text-indigo-700]="selectedMethod() === 'qr'"
+            [class.border-[#00B074]]="selectedMethod() === 'qr'"
+            [class.bg-[#E7F7F0]]="selectedMethod() === 'qr'"
+            [class.text-[#00B074]]="selectedMethod() === 'qr'"
             [class.border-slate-200]="selectedMethod() !== 'qr'"
             [class.text-slate-600]="selectedMethod() !== 'qr'"
-            class="flex flex-col items-center justify-center rounded-2xl border-2 p-3 transition hover:border-indigo-400 active:scale-95"
+            class="flex flex-col items-center justify-center rounded-2xl border-2 p-3 transition hover:border-[#00B074] active:scale-95 cursor-pointer"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z" />
@@ -106,7 +106,7 @@
                 min="0"
                 [value]="cashTendered()"
                 (input)="onTenderInputChange($event)"
-                class="w-full rounded-xl border border-slate-300 bg-white pl-8 pr-4 py-2.5 text-base font-bold text-slate-800 shadow-2xs focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                class="w-full rounded-xl border border-slate-300 bg-white pl-8 pr-4 py-2.5 text-base font-bold text-slate-800 shadow-2xs focus:border-[#00B074] focus:outline-none focus:ring-2 focus:ring-emerald-100"
               />
             </div>
           </div>
@@ -119,11 +119,11 @@
                 <button
                   type="button"
                   (click)="setTenderAmount(amount)"
-                  [class.bg-indigo-600]="cashTendered() === amount"
+                  [class.bg-[#00B074]]="cashTendered() === amount"
                   [class.text-white]="cashTendered() === amount"
                   [class.bg-white]="cashTendered() !== amount"
                   [class.text-slate-700]="cashTendered() !== amount"
-                  class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold shadow-2xs transition hover:bg-slate-100 active:scale-95"
+                  class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold shadow-2xs transition hover:bg-slate-100 active:scale-95 cursor-pointer"
                 >
                   ${{ amount | number: '1.2-2' }}
                 </button>
@@ -135,7 +135,7 @@
           <div class="flex items-center justify-between border-t border-slate-200 pt-3">
             <span class="text-xs font-semibold text-slate-600">Change Due:</span>
             <span
-              [class.text-emerald-600]="isCashSufficient()"
+              [class.text-[#00B074]]="isCashSufficient()"
               [class.text-rose-600]="!isCashSufficient()"
               class="text-lg font-black"
             >
@@ -149,7 +149,7 @@
         </div>
       } @else if (selectedMethod() === 'card') {
         <div class="flex flex-col items-center justify-center rounded-2xl bg-slate-50 p-6 border border-slate-200 text-center">
-          <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600 mb-3 animate-pulse">
+          <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-100 text-[#00B074] mb-3 animate-pulse">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
             </svg>
@@ -158,17 +158,16 @@
           <p class="mt-1 text-xs text-slate-400 max-w-xs">
             Insert, tap (NFC), or swipe card on customer-facing terminal.
           </p>
-          <div class="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
-            <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
+          <div class="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
+            <span class="h-2 w-2 rounded-full bg-[#00B074] animate-ping"></span>
             Terminal Connected
           </div>
         </div>
       } @else if (selectedMethod() === 'qr') {
         <div class="flex flex-col items-center justify-center rounded-2xl bg-slate-50 p-6 border border-slate-200 text-center">
-          <!-- Stylized QR Code placeholder -->
           <div class="flex h-36 w-36 items-center justify-center rounded-2xl bg-white p-3 shadow-sm border border-slate-200 mb-3">
             <img
-              src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=POS-PAYMENT-MOCK"
+              src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=SUPAPOS-PAYMENT"
               alt="Scan to pay"
               class="h-full w-full object-contain"
             />
@@ -186,7 +185,7 @@
       <button
         type="button"
         (click)="posService.closeCheckout()"
-        class="flex-1 rounded-xl border border-slate-200 bg-white py-3 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition active:scale-95 shadow-2xs"
+        class="flex-1 rounded-xl border border-slate-200 bg-white py-3 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition active:scale-95 shadow-2xs cursor-pointer"
       >
         Cancel
       </button>
@@ -195,7 +194,7 @@
         type="button"
         [disabled]="!isCashSufficient()"
         (click)="submitPayment()"
-        class="flex-[2] rounded-xl bg-indigo-600 py-3 text-xs font-bold text-white shadow-md shadow-indigo-200 hover:bg-indigo-700 transition disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
+        class="flex-[2] rounded-xl bg-[#00B074] hover:bg-[#009663] py-3 text-xs font-bold text-white shadow-md shadow-emerald-500/20 transition disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 cursor-pointer"
       >
         Confirm & Complete Sale (${{ posService.total() | number: '1.2-2' }})
       </button>

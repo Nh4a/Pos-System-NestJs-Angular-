@@ -28,11 +28,16 @@ export class PosService {
 
   // Search & Filter state
   public searchQuery = signal<string>('');
+  public selectedCategory = signal<string>('all'); // 'all', 'foods', 'beverages', 'others'
   public stockFilter = signal<ProductStockFilter>('all');
   public sortBy = signal<ProductSortOption>('name');
 
-  // Pricing configuration
-  public taxRate = signal<number>(0); // 0, 5, 8, 10 (%)
+  // Customer & Payment Selection (SupaPOS Order Detail)
+  public selectedCustomer = signal<string>('Walk-in Customer');
+  public selectedPaymentMethod = signal<PaymentMethod>('cash');
+
+  // Pricing configuration (8.25% default tax matching SupaPOS design)
+  public taxRate = signal<number>(8.25);
   public discountRate = signal<number>(0); // 0, 5, 10, 15 (%)
 
   // Orders state
@@ -91,12 +96,30 @@ export class PosService {
     return Math.max(0, Math.round(totalCalc * 100) / 100);
   });
 
+  // Category classification helper
+  public getProductCategory(product: Product): 'Foods' | 'Beverages' | 'Others' {
+    const text = `${product.productName} ${product.description || ''}`.toLowerCase();
+    if (/drink|beverage|coffee|tea|shake|milkshake|juice|water|coke|soda|smoothie|beer|wine|latte|espresso/.test(text)) {
+      return 'Beverages';
+    }
+    if (/burger|cheeseburger|salad|fries|food|meal|pizza|sandwich|pasta|chicken|beef|steak|soup|noodle|cake|dessert|bread|combo|snack|taco/.test(text)) {
+      return 'Foods';
+    }
+    return 'Others';
+  }
+
   // Filtered and sorted product catalog
   public filteredProducts = computed(() => {
     let prods = [...this.products()];
     const query = this.searchQuery().trim().toLowerCase();
+    const category = this.selectedCategory().toLowerCase();
 
-    // 1. Text filter
+    // 1. Category filter
+    if (category !== 'all') {
+      prods = prods.filter((p) => this.getProductCategory(p).toLowerCase() === category);
+    }
+
+    // 2. Text filter
     if (query) {
       prods = prods.filter(
         (p) =>
@@ -106,7 +129,7 @@ export class PosService {
       );
     }
 
-    // 2. Stock filter
+    // 3. Stock filter
     const filter = this.stockFilter();
     if (filter === 'in-stock') {
       prods = prods.filter((p) => p.stockQty > 5);
@@ -116,7 +139,7 @@ export class PosService {
       prods = prods.filter((p) => p.stockQty === 0);
     }
 
-    // 3. Sorting
+    // 4. Sorting
     const sort = this.sortBy();
     prods.sort((a, b) => {
       switch (sort) {
@@ -311,7 +334,8 @@ export class PosService {
 
   public completeSale(
     paymentMethod: PaymentMethod,
-    amountReceived?: number
+    amountReceived?: number,
+    customerName?: string
   ): POSOrder | null {
     if (this.cart().length === 0) return null;
 
@@ -342,7 +366,8 @@ export class PosService {
       amountReceived: finalReceived,
       change: Math.round(change * 100) / 100,
       createdAt: now.toISOString(),
-      cashierName: 'Cashier #1',
+      cashierName: 'James Davidson',
+      customerName: customerName || this.selectedCustomer(),
     };
 
     // 1. Deduct stock using the old API data service
@@ -364,6 +389,19 @@ export class PosService {
 
     this.showToast('Sale completed successfully! Receipt ready.', 'success');
     return order;
+  }
+
+  public makeOrderDirect(): boolean {
+    if (this.cart().length === 0) {
+      this.showToast('Please add products to your order first.', 'warning');
+      return false;
+    }
+    const order = this.completeSale(
+      this.selectedPaymentMethod(),
+      this.total(),
+      this.selectedCustomer()
+    );
+    return !!order;
   }
 
   public reprintReceipt(order: POSOrder): void {

@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PosService } from '../../services/pos.service';
+import { PaymentMethod } from '../../models/pos.model';
 
 @Component({
   selector: 'app-pos-cart',
@@ -12,12 +13,18 @@ import { PosService } from '../../services/pos.service';
 export class PosCartComponent {
   public posService = inject(PosService);
 
-  public onQuantityChange(productId: number, event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const value = parseInt(input.value, 10);
-    if (!isNaN(value)) {
-      this.posService.updateQuantity(productId, value);
-    }
+  public onCustomerChange(event: Event): void {
+    const val = (event.target as HTMLSelectElement).value;
+    this.posService.selectedCustomer.set(val);
+  }
+
+  public onPaymentMethodChange(event: Event): void {
+    const val = (event.target as HTMLSelectElement).value as PaymentMethod;
+    this.posService.selectedPaymentMethod.set(val);
+  }
+
+  public onMakeOrder(): void {
+    this.posService.makeOrderDirect();
   }
 
   public onTaxRateChange(event: Event): void {

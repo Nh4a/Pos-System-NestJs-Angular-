@@ -24,6 +24,7 @@ export interface POSOrder {
   change?: number;
   createdAt: string;
   cashierName: string;
+  customerName?: string;
 }
 
 export interface HeldOrder {

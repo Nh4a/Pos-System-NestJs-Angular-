@@ -23,6 +23,7 @@ import { Product } from '../../../../models/product/product';
 
 @Component({
   selector: 'app-product-form',
+  standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './product-form.html',
   styleUrl: './product-form.css',
@@ -32,8 +33,9 @@ export class ProductForm {
   protected imagePreview: string | null = null;
   protected selectedFile: File | null = null;
   public product: InputSignal<Product | null> = input<Product | null>(null);
-  protected onSubmit: OutputEmitterRef<ProductFormValue> = output<ProductFormValue>();
-  protected onReset: OutputEmitterRef<void> = output<void>();
+  public onSubmit: OutputEmitterRef<ProductFormValue> = output<ProductFormValue>();
+  public onReset: OutputEmitterRef<void> = output<void>();
+  public onClose: OutputEmitterRef<void> = output<void>();
 
   protected productForm: FormGroup<productForm> = this.formBuilder.group<productForm>({
     productName: new FormControl('', {
@@ -53,7 +55,6 @@ export class ProductForm {
 
     description: new FormControl<string | null>(null),
   });
-  // protected product = input<>
 
   constructor() {
     effect(() => {
@@ -65,13 +66,14 @@ export class ProductForm {
         }
       } else {
         this.productForm.reset();
+        this.imagePreview = null;
+        this.selectedFile = null;
       }
     });
   }
 
   protected onImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-
     this.selectedFile = input.files?.[0] ?? null;
 
     if (!this.selectedFile) {
@@ -79,14 +81,13 @@ export class ProductForm {
     }
 
     if (this.selectedFile.size > 1024 * 1024 * 5) {
-      alert('file is too large. ');
+      alert('file is too large (max 5MB).');
     }
 
     this.imagePreview = URL.createObjectURL(this.selectedFile);
-    console.log(this.selectedFile);
   }
 
-  protected reSetClick() {
+  public reSetClick() {
     this.imagePreview = null;
     this.selectedFile = null;
     this.onReset.emit();
@@ -98,5 +99,9 @@ export class ProductForm {
       ...this.productForm.value,
       file: this.selectedFile || null,
     });
+  }
+
+  public closeClick() {
+    this.onClose.emit();
   }
 }
