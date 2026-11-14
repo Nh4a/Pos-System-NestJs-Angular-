@@ -61,7 +61,18 @@ export class ProductService {
           id: 'desc',
         },
       });
-      return products;
+       function name(p: any) {
+        return new Promise((resovle) => {
+          setTimeout(() => {
+            resovle(products);
+          }, 3000);
+        });
+      }
+      console.log('before')
+
+      const p =await name(products) 
+      console.log('after')
+      return p
     } catch (error) {
       throw new RequestTimeoutException(
         "Can't fetch product now please try latter",
@@ -71,7 +82,6 @@ export class ProductService {
 
   public async deleteProduct(id: number) {
     let deleteProduct: Product | null = null;
-
     try {
       deleteProduct = await this.productRepo.findOneBy({ id });
     } catch (error) {

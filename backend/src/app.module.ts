@@ -4,6 +4,10 @@ import { AppService } from './app.service.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ProductModule } from './product/product.module.js';
+import { CategoriesModule } from './categories/categories.module.js';
+import { AuthModule } from './auth/auth.module.js';
+import { AuthController } from './auth.controller.js';
+import { AuthauthController } from './authauth.controller.js';
 import databaseConfig from './config/database.config.js';
 import cloudinaryConfig from './config/cloudinary.config.js';
 
@@ -34,8 +38,10 @@ import cloudinaryConfig from './config/cloudinary.config.js';
       }),
     }),
     ProductModule,
+    CategoriesModule,
+    AuthModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, AuthController, AuthauthController],
   providers: [AppService],
 })
 export class AppModule {}
