@@ -14,6 +14,9 @@ import { ProductFormValue } from '../../../../models/product/create-product-form
   imports: [CommonModule, FormsModule, RouterLink, ProductForm, Loading],
   templateUrl: './product.page.html',
   styleUrl: './product.page.css',
+  host: {
+    class: 'flex-1 flex flex-col min-h-0 min-w-0 w-full h-full overflow-hidden',
+  },
 })
 export class ProductPage implements OnInit {
   // Filter & Search Signals

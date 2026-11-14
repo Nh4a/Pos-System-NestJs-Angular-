@@ -27,6 +27,9 @@ import { ProductSortOption, ProductStockFilter } from './models/pos.model';
   ],
   templateUrl: './pos.component.html',
   styleUrl: './pos.component.css',
+  host: {
+    class: 'flex-1 flex flex-col min-h-0 min-w-0 w-full h-full overflow-hidden',
+  },
 })
 export class PosComponent implements OnInit, OnDestroy {
   public posService = inject(PosService);
