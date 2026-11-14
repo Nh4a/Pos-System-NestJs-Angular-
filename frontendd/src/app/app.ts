@@ -1,17 +1,16 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import {ProductPage} from './features/products/pages/product.page/product.page'
-import { ProductForm } from './features/products/components/product-form/product-form';
+import { Component, inject, signal } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { PosService } from './features/pos/services/pos.service';
+
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ProductPage, ProductForm],
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class App {
-  protected readonly title = signal('crud-product');
-
-  onsubmit(){
-    alert(this.title);
-  }
+  public posService = inject(PosService);
+  protected readonly title = signal('POS System');
 }

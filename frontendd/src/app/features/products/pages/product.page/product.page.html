@@ -1,127 +1,119 @@
-<app-product-form
-  (onSubmit)="productService.onSubmit($event)"
-  [product]="productService.productForm"
-  (onReset)="productService.onResetForm()"
-></app-product-form>
-@if(productService.isSubmitting()){
+<div class="max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
+  <app-product-form (onSubmit)="productService.onSubmit($event)" [product]="productService.productForm"
+    (onReset)="productService.onResetForm()"></app-product-form>
+
+  @if (productService.isSubmitting()) {
   <app-loading></app-loading>
-}
-<div class="w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-  <button class="hover:cursor-pointer">Add Product</button>
+  }
 
-  <!-- Header -->
-  <div class="border-b border-gray-200 px-6 py-5">
-    <h2 class="text-xl font-bold text-gray-800">Products</h2>
-    <p class="mt-1 text-sm text-gray-500">Manage and view all your products.</p>
-  </div>
+  <div class="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <!-- Header -->
+    <div class="border-b border-slate-200 px-6 py-5 flex items-center justify-between">
+      <div>
+        <h2 class="text-xl font-bold text-slate-800">Products Catalog</h2>
+        <p class="mt-1 text-sm text-slate-500">Manage and view all inventory products.</p>
+      </div>
+      <div class="rounded-xl bg-indigo-50 px-3.5 py-1.5 text-xs font-bold text-indigo-700 border border-indigo-100">
+        {{ productService.getAllProducts().length }} total products
+      </div>
+    </div>
 
-  <!-- Table -->
-  <div class="w-full overflow-x-auto">
-    <table class="w-full min-w-[650px] text-left text-sm">
-      <thead class="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
-        <tr>
-          <th class="px-6 py-4 font-semibold">No.</th>
-          <th class="px-6 py-4 font-semibold">Product</th>
-          <th class="px-6 py-4 font-semibold">Description</th>
-          <th class="px-6 py-4 font-semibold">Unit Price</th>
-          <th class="px-6 py-4 font-semibold">Stock Quantity</th>
-          <th class="px-6 py-4 text-center font-semibold">Image</th>
-          <th class="px-6 py-4 text-center font-semibold">Action</th>
-        </tr>
-      </thead>
+    <!-- Table -->
+    <div class="w-full overflow-x-auto">
+      <table class="w-full min-w-[650px] text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500 border-b border-slate-200">
+          <tr>
+            <th class="px-6 py-4 font-semibold">No.</th>
+            <th class="px-6 py-4 font-semibold">Product</th>
+            <th class="px-6 py-4 font-semibold">Description</th>
+            <th class="px-6 py-4 font-semibold">Unit Price</th>
+            <th class="px-6 py-4 font-semibold">Stock Quantity</th>
+            <th class="px-6 py-4 text-center font-semibold">Image</th>
+            <th class="px-6 py-4 text-center font-semibold">Action</th>
+          </tr>
+        </thead>
 
-      <tbody class="divide-y divide-gray-100">
-        @for (item of productService.getAllProducts(); let index = $index; track $index) {
-          <tr class="transition-colors hover:bg-gray-50">
-            <td class="px-6 py-4 font-medium text-gray-500">
+        <tbody class="divide-y divide-slate-100">
+          @for (item of productService.getAllProducts(); let index = $index; track item.id || index) {
+          <tr class="transition-colors hover:bg-slate-50/80">
+            <td class="px-6 py-4 font-medium text-slate-400">
               {{ index + 1 }}
             </td>
 
-            <td class="px-6 py-4 font-semibold text-gray-800">
+            <td class="px-6 py-4 font-bold text-slate-800">
               {{ item?.productName }}
             </td>
 
-            <td class="max-w-xs px-6 py-4 text-gray-600">
-              <p class="line-clamp-2">
+            <td class="max-w-xs px-6 py-4 text-slate-600">
+              <p class="line-clamp-2 text-xs">
                 {{ item?.description || 'No description available' }}
               </p>
             </td>
 
-            <th class="px-6 py-4 font-semibold">{{ item?.unitPrice }}</th>
-            <th class="px-6 py-4 font-semibold">{{ item?.stockQty }}</th>
+            <td class="px-6 py-4 font-bold text-slate-900">
+              ${{ item?.unitPrice | number: '1.2-2' }}
+            </td>
+
+            <td class="px-6 py-4">
+              <!-- <span [class.bg-emerald-50]="item.stockQty > 5" [class.text-emerald-700]="item?.stockQty > 5"
+                [class.border-emerald-200]="item.stockQty > 5"
+                [class.bg-amber-50]="item.stockQty > 0 && item?.stockQty <= 5"
+                [class.text-amber-700]="item.stockQty > 0 && item?.stockQty <= 5"
+                [class.border-amber-200]="item.stockQty > 0 && item?.stockQty <= 5"
+                [class.bg-rose-50]="item.stockQty === 0" [class.text-rose-700]="item?.stockQty === 0"
+                [class.border-rose-200]="item?.stockQty === 0"
+                class="inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-semibold border">
+                -->{{ item?.stockQty }} in stock
+              <!-- </span>  -->
+            </td>
 
             <td class="px-6 py-3">
               <div class="flex justify-center">
-                <img
-                  [src]="
-                    item?.imageUrl ??
-                    'https://static.vecteezy.com/system/resources/thumbnails/022/059/000/small_2x/no-image-available-icon-vector.jpg'
-                  "
-                  [alt]="item?.productName || 'Product image'"
-                  class="h-14 w-14 rounded-lg border border-gray-200 object-cover"
-                />
+                <img [src]="
+                      item?.imageUrl ??
+                      'https://static.vecteezy.com/system/resources/thumbnails/022/059/000/small_2x/no-image-available-icon-vector.jpg'
+                    " [alt]="item?.productName || 'Product image'"
+                  class="h-12 w-12 rounded-xl border border-slate-200 object-cover shadow-2xs" />
               </div>
             </td>
+
             <td class="px-6 py-4">
               <div class="flex items-center justify-center gap-2">
                 <!-- Update Button -->
-                <button
-                  (click)="productService.setUpdateProductToForm(item)"
-                  type="button"
-                  class="inline-flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600 transition hover:bg-blue-100 active:scale-95"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="m16.862 4.487 1.687-1.688a2.25 2.25 0 1 1 3.182 3.182l-9.88 9.88a4.5 4.5 0 0 1-1.897 1.13l-3.17.906.906-3.17a4.5 4.5 0 0 1 1.13-1.897l8.042-8.343Z"
-                    />
+                <button (click)="productService.setUpdateProductToForm(item)" type="button"
+                  class="inline-flex items-center gap-1.5 rounded-xl bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-600 transition hover:bg-blue-100 active:scale-95 border border-blue-100">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="m16.862 4.487 1.687-1.688a2.25 2.25 0 1 1 3.182 3.182l-9.88 9.88a4.5 4.5 0 0 1-1.897 1.13l-3.17.906.906-3.17a4.5 4.5 0 0 1 1.13-1.897l8.042-8.343Z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 7.5 16.5 4.5" />
                   </svg>
                   Update
                 </button>
 
                 <!-- Delete Button -->
-                <button
-                  (click)="productService.onDelete(item.id)"
-                  type="button"
-                  class="inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-100 active:scale-95"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M6 7h12m-10 0V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 13h8l1-13M10 11v5m4-5v5"
-                    />
+                <button (click)="productService.onDelete(item.id)" type="button"
+                  class="inline-flex items-center gap-1.5 rounded-xl bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-100 active:scale-95 border border-rose-100">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M6 7h12m-10 0V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 13h8l1-13M10 11v5m4-5v5" />
                   </svg>
                   Delete
                 </button>
               </div>
             </td>
           </tr>
-        } @empty {
+          } @empty {
           <tr>
-            <td colspan="4" class="px-6 py-12 text-center">
-              <p class="font-medium text-gray-500">No products found</p>
-              <p class="mt-1 text-sm text-gray-400">Your products will appear here.</p>
+            <td colspan="7" class="px-6 py-12 text-center">
+              <p class="font-medium text-slate-500">No products found</p>
+              <p class="mt-1 text-sm text-slate-400">Your products will appear here.</p>
             </td>
           </tr>
-        }
-      </tbody>
-    </table>
+          }
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

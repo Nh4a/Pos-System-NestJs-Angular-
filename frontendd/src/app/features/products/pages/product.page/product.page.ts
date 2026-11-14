@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ProductService } from '../../service/product.service';
 import { ProductForm } from '../../components/product-form/product-form';
 import { Loading } from '../../components/loading/loading';
 
 @Component({
   selector: 'app-product-page',
-  imports: [ProductForm, Loading],
+  standalone: true,
+  imports: [CommonModule, ProductForm, Loading],
   templateUrl: './product.page.html',
   styleUrl: './product.page.css',
 })

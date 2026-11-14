@@ -1,0 +1,49 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media print {
+  /* Hide everything except the receipt when printing */
+  body * {
+    visibility: hidden;
+  }
+  #pos-printable-receipt,
+  #pos-printable-receipt * {
+    visibility: visible;
+  }
+  #pos-printable-receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
+    padding: 10px;
+  }
+}

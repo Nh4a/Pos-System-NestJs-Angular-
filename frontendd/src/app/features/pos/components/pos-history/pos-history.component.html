@@ -1,0 +1,106 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-fadeIn">
+  <div class="relative w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl border border-slate-100 flex flex-col max-h-[85vh]">
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+      <div>
+        <h3 class="text-base font-bold text-slate-800">Sales & Order History</h3>
+        <p class="text-xs text-slate-400">View previous transactions and reprint receipts</p>
+      </div>
+      <button
+        type="button"
+        (click)="close()"
+        class="text-slate-400 hover:text-slate-600 transition"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Summary Stats Bar -->
+    <div class="grid grid-cols-3 gap-3 border-b border-slate-100 bg-slate-50 p-4">
+      <div class="rounded-xl border border-slate-200/60 bg-white p-3 text-center shadow-2xs">
+        <div class="text-[11px] font-medium text-slate-400">Total Sales</div>
+        <div class="text-lg font-black text-indigo-600">
+          ${{ totalSales() | number: '1.2-2' }}
+        </div>
+      </div>
+      <div class="rounded-xl border border-slate-200/60 bg-white p-3 text-center shadow-2xs">
+        <div class="text-[11px] font-medium text-slate-400">Transactions</div>
+        <div class="text-lg font-black text-slate-800">
+          {{ posService.orderHistory().length }}
+        </div>
+      </div>
+      <div class="rounded-xl border border-slate-200/60 bg-white p-3 text-center shadow-2xs">
+        <div class="text-[11px] font-medium text-slate-400">Avg. Ticket</div>
+        <div class="text-lg font-black text-emerald-600">
+          @if (posService.orderHistory().length > 0) {
+            ${{ (totalSales() / posService.orderHistory().length) | number: '1.2-2' }}
+          } @else {
+            $0.00
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders Table List -->
+    <div class="flex-1 overflow-y-auto p-6 space-y-3">
+      @for (order of posService.orderHistory(); track order.orderId) {
+        <div class="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xs hover:border-indigo-200 transition">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-xs font-bold text-slate-900">{{ order.receiptNumber }}</span>
+              <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 uppercase">
+                {{ order.paymentMethod }}
+              </span>
+            </div>
+            <div class="text-xs text-slate-400">
+              {{ order.createdAt | date: 'short' }} • {{ order.itemCount }} item(s)
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <div class="text-right">
+              <div class="text-base font-black text-slate-900">
+                ${{ order.total | number: '1.2-2' }}
+              </div>
+              <div class="text-[11px] text-slate-400">
+                Subtotal: ${{ order.subtotal | number: '1.2-2' }}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              (click)="reprint(order)"
+              class="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition active:scale-95 shadow-2xs"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+              </svg>
+              Receipt
+            </button>
+          </div>
+        </div>
+      } @empty {
+        <div class="py-12 text-center text-slate-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-10 w-10 text-slate-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z" />
+          </svg>
+          <p class="text-sm font-medium text-slate-600">No transactions yet</p>
+          <p class="text-xs text-slate-400">Completed sales will automatically show up here.</p>
+        </div>
+      }
+    </div>
+
+    <!-- Footer -->
+    <div class="border-t border-slate-100 bg-slate-50 px-6 py-3 text-right">
+      <button
+        type="button"
+        (click)="close()"
+        class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition active:scale-95"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+</div>

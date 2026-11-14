@@ -1,0 +1,161 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-fadeIn">
+  <div class="relative w-full max-w-sm overflow-hidden rounded-3xl bg-white shadow-2xl border border-slate-100 flex flex-col">
+    <!-- Header Controls -->
+    <div class="flex items-center justify-between border-b border-slate-100 px-5 py-3 bg-slate-50">
+      <div class="flex items-center gap-1.5 text-xs font-semibold text-emerald-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+        Transaction Completed
+      </div>
+      <button
+        type="button"
+        (click)="closeReceipt()"
+        class="text-slate-400 hover:text-slate-600 transition"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Printable Receipt Body -->
+    <div id="pos-printable-receipt" class="p-6 font-mono text-xs text-slate-800 space-y-4 max-h-[70vh] overflow-y-auto">
+      <!-- Store Header -->
+      <div class="text-center space-y-1">
+        <h2 class="text-base font-black tracking-wider uppercase">POINT OF SALE</h2>
+        <p class="text-[11px] text-slate-500">Retail Store #01 • Downtown</p>
+        <p class="text-[11px] text-slate-400">Tel: +1 (555) 019-2834</p>
+      </div>
+
+      <div class="border-t border-dashed border-slate-300 my-2"></div>
+
+      <!-- Receipt Meta -->
+      <div class="space-y-0.5 text-[11px] text-slate-600">
+        <div class="flex justify-between">
+          <span>Receipt #:</span>
+          <span class="font-bold">{{ posService.activeReceipt()?.receiptNumber }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Date:</span>
+          <span>{{ posService.activeReceipt()?.createdAt | date: 'medium' }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Cashier:</span>
+          <span>{{ posService.activeReceipt()?.cashierName }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Method:</span>
+          <span class="uppercase font-semibold">{{ posService.activeReceipt()?.paymentMethod }}</span>
+        </div>
+      </div>
+
+      <div class="border-t border-dashed border-slate-300 my-2"></div>
+
+      <!-- Items Table -->
+      <div class="space-y-2">
+        <div class="flex justify-between font-bold text-[11px] text-slate-500 uppercase">
+          <span>Item</span>
+          <span>Total</span>
+        </div>
+
+        @for (item of posService.activeReceipt()?.items; track item.product.id) {
+          <div class="space-y-0.5">
+            <div class="flex justify-between font-semibold text-slate-800">
+              <span class="truncate max-w-[200px]">{{ item.product.productName }}</span>
+              <span>${{ item.subtotal | number: '1.2-2' }}</span>
+            </div>
+            <div class="text-[10px] text-slate-400">
+              {{ item.quantity }} x ${{ item.product.unitPrice | number: '1.2-2' }}
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="border-t border-dashed border-slate-300 my-2"></div>
+
+      <!-- Totals Breakdown -->
+      <div class="space-y-1 text-slate-700">
+        <div class="flex justify-between">
+          <span>Subtotal:</span>
+          <span>${{ posService.activeReceipt()?.subtotal | number: '1.2-2' }}</span>
+        </div>
+
+        @if ((posService.activeReceipt()?.discount || 0) > 0) {
+          <div class="flex justify-between text-emerald-600">
+            <span>Discount ({{ posService.activeReceipt()?.discountRate }}%):</span>
+            <span>-${{ posService.activeReceipt()?.discount | number: '1.2-2' }}</span>
+          </div>
+        }
+
+        @if ((posService.activeReceipt()?.tax || 0) > 0) {
+          <div class="flex justify-between text-slate-500">
+            <span>Tax ({{ posService.activeReceipt()?.taxRate }}%):</span>
+            <span>+${{ posService.activeReceipt()?.tax | number: '1.2-2' }}</span>
+          </div>
+        }
+
+        <div class="flex justify-between text-sm font-black text-slate-900 border-t border-slate-200 pt-1.5">
+          <span>TOTAL:</span>
+          <span>${{ posService.activeReceipt()?.total | number: '1.2-2' }}</span>
+        </div>
+
+        @if (posService.activeReceipt()?.paymentMethod === 'cash') {
+          <div class="flex justify-between text-[11px] text-slate-500 pt-1">
+            <span>Cash Tendered:</span>
+            <span>${{ posService.activeReceipt()?.amountReceived | number: '1.2-2' }}</span>
+          </div>
+          <div class="flex justify-between text-[11px] font-bold text-emerald-700">
+            <span>Change Returned:</span>
+            <span>${{ posService.activeReceipt()?.change | number: '1.2-2' }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="border-t border-dashed border-slate-300 my-3"></div>
+
+      <!-- Barcode / Footer -->
+      <div class="text-center space-y-2 pt-1">
+        <div class="flex justify-center">
+          <!-- Stylized barcode bars -->
+          <div class="flex h-8 items-center gap-0.5">
+            <div class="h-full w-1 bg-slate-900"></div>
+            <div class="h-full w-0.5 bg-slate-900"></div>
+            <div class="h-full w-1.5 bg-slate-900"></div>
+            <div class="h-full w-0.5 bg-slate-900"></div>
+            <div class="h-full w-2 bg-slate-900"></div>
+            <div class="h-full w-0.5 bg-slate-900"></div>
+            <div class="h-full w-1 bg-slate-900"></div>
+            <div class="h-full w-1.5 bg-slate-900"></div>
+            <div class="h-full w-0.5 bg-slate-900"></div>
+            <div class="h-full w-2 bg-slate-900"></div>
+            <div class="h-full w-1 bg-slate-900"></div>
+          </div>
+        </div>
+        <p class="text-[10px] text-slate-400">*** THANK YOU FOR YOUR VISIT ***</p>
+      </div>
+    </div>
+
+    <!-- Actions (No-print) -->
+    <div class="flex items-center gap-2 border-t border-slate-100 bg-slate-50 px-5 py-3">
+      <button
+        type="button"
+        (click)="printReceipt()"
+        class="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-white py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition active:scale-95 shadow-2xs"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+        </svg>
+        Print Receipt
+      </button>
+
+      <button
+        type="button"
+        (click)="closeReceipt()"
+        class="flex-1 inline-flex items-center justify-center rounded-xl bg-indigo-600 py-2 text-xs font-bold text-white shadow-md shadow-indigo-200 hover:bg-indigo-700 transition active:scale-95"
+      >
+        New Sale
+      </button>
+    </div>
+  </div>
+</div>

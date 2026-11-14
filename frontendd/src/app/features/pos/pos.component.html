@@ -1,0 +1,261 @@
+<div class="min-h-screen bg-slate-100/70 p-3 sm:p-5 flex flex-col font-sans text-slate-800">
+  <!-- Top Navigation & Control Bar -->
+  <header class="mb-4 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-xs sm:flex-row sm:items-center sm:justify-between">
+    <!-- Brand / Title & Clock -->
+    <div class="flex items-center gap-3">
+      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-100">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72m-13.5 8.651h3m-3-3h3m7.5 3h3m-3-3h3" />
+        </svg>
+      </div>
+
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-base font-bold text-slate-800 tracking-tight">Point of Sale</h1>
+          <span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse"></span>
+            Online POS
+          </span>
+        </div>
+        <div class="text-xs text-slate-400">
+          {{ currentTime() }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Input (Center/Wide) -->
+    <div class="relative flex-1 max-w-md">
+      <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        </svg>
+      </span>
+      <input
+        type="text"
+        [value]="posService.searchQuery()"
+        (input)="onSearchInput($event)"
+        placeholder="Search product name or barcode..."
+        class="w-full rounded-xl border border-slate-200 bg-slate-50/70 pl-9 pr-9 py-2 text-xs font-medium text-slate-700 placeholder-slate-400 transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100"
+      />
+      @if (posService.searchQuery()) {
+        <button
+          type="button"
+          (click)="clearSearch()"
+          class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      }
+    </div>
+
+    <!-- Action Shortcuts -->
+    <div class="flex items-center gap-2">
+      <!-- Held Orders -->
+      <button
+        type="button"
+        (click)="openHeldOrders()"
+        class="relative inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 active:scale-95 shadow-2xs"
+        title="View held orders"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+        <span>Held</span>
+        @if (posService.heldOrders().length > 0) {
+          <span class="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white">
+            {{ posService.heldOrders().length }}
+          </span>
+        }
+      </button>
+
+      <!-- History -->
+      <button
+        type="button"
+        (click)="openHistory()"
+        class="relative inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 active:scale-95 shadow-2xs"
+        title="View sales history"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z" />
+        </svg>
+        <span>History</span>
+        @if (posService.orderHistory().length > 0) {
+          <span class="flex h-5 min-w-5 items-center justify-center rounded-full bg-indigo-600 px-1 text-[10px] font-bold text-white">
+            {{ posService.orderHistory().length }}
+          </span>
+        }
+      </button>
+
+      <!-- Refresh from API -->
+      <button
+        type="button"
+        (click)="refresh()"
+        class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white p-2 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 transition active:scale-95 shadow-2xs"
+        title="Refresh catalog from API"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          [class.animate-spin]="posService.isLoadingProducts()"
+          class="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Split Layout (Catalog on Left, Cart on Right) -->
+  <main class="grid flex-1 grid-cols-1 gap-4 lg:grid-cols-12 min-h-0">
+    <!-- Left Column: Product Catalog (lg:col-span-8) -->
+    <section class="flex flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-xs lg:col-span-8">
+      <!-- Category & Stock Filter Tabs & Sort Controls -->
+      <div class="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+        <!-- Stock Tabs -->
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button
+            type="button"
+            (click)="setFilter('all')"
+            [class.bg-indigo-600]="posService.stockFilter() === 'all'"
+            [class.text-white]="posService.stockFilter() === 'all'"
+            [class.bg-slate-100]="posService.stockFilter() !== 'all'"
+            [class.text-slate-600]="posService.stockFilter() !== 'all'"
+            class="rounded-xl px-3 py-1.5 text-xs font-semibold transition active:scale-95"
+          >
+            All Products ({{ posService.stockMetrics().all }})
+          </button>
+
+          <button
+            type="button"
+            (click)="setFilter('in-stock')"
+            [class.bg-indigo-600]="posService.stockFilter() === 'in-stock'"
+            [class.text-white]="posService.stockFilter() === 'in-stock'"
+            [class.bg-slate-100]="posService.stockFilter() !== 'in-stock'"
+            [class.text-slate-600]="posService.stockFilter() !== 'in-stock'"
+            class="rounded-xl px-3 py-1.5 text-xs font-semibold transition active:scale-95"
+          >
+            In Stock ({{ posService.stockMetrics().inStock }})
+          </button>
+
+          <button
+            type="button"
+            (click)="setFilter('low-stock')"
+            [class.bg-amber-500]="posService.stockFilter() === 'low-stock'"
+            [class.text-white]="posService.stockFilter() === 'low-stock'"
+            [class.bg-slate-100]="posService.stockFilter() !== 'low-stock'"
+            [class.text-slate-600]="posService.stockFilter() !== 'low-stock'"
+            class="rounded-xl px-3 py-1.5 text-xs font-semibold transition active:scale-95"
+          >
+            Low Stock ({{ posService.stockMetrics().lowStock }})
+          </button>
+
+          <button
+            type="button"
+            (click)="setFilter('out-of-stock')"
+            [class.bg-rose-500]="posService.stockFilter() === 'out-of-stock'"
+            [class.text-white]="posService.stockFilter() === 'out-of-stock'"
+            [class.bg-slate-100]="posService.stockFilter() !== 'out-of-stock'"
+            [class.text-slate-600]="posService.stockFilter() !== 'out-of-stock'"
+            class="rounded-xl px-3 py-1.5 text-xs font-semibold transition active:scale-95"
+          >
+            Out of Stock ({{ posService.stockMetrics().outOfStock }})
+          </button>
+        </div>
+
+        <!-- Sort Select -->
+        <div class="flex items-center gap-1.5 text-xs text-slate-500">
+          <span>Sort:</span>
+          <select
+            [value]="posService.sortBy()"
+            (change)="setSort($event)"
+            class="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 focus:border-indigo-500 focus:outline-none"
+          >
+            <option value="name">Name (A-Z)</option>
+            <option value="price-asc">Price (Low to High)</option>
+            <option value="price-desc">Price (High to Low)</option>
+            <option value="stock">Stock Level</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Catalog Grid (Scrollable) -->
+      <div class="flex-1 overflow-y-auto pr-1">
+        @if (posService.filteredProducts().length > 0) {
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+            @for (product of posService.filteredProducts(); track product.id) {
+              <app-pos-product-card [product]="product"></app-pos-product-card>
+            }
+          </div>
+        } @else {
+          <div class="flex h-64 flex-col items-center justify-center text-center text-slate-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+            <p class="text-sm font-semibold text-slate-700">No products match your criteria</p>
+            <p class="mt-1 text-xs text-slate-400">Try adjusting your search query or reset filter tabs.</p>
+            <button
+              type="button"
+              (click)="clearSearch(); setFilter('all')"
+              class="mt-3 rounded-xl bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-100 transition"
+            >
+              Reset Filters
+            </button>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Right Column: Cart Panel (lg:col-span-4) -->
+    <aside class="flex flex-col lg:col-span-4">
+      <app-pos-cart></app-pos-cart>
+    </aside>
+  </main>
+
+  <!-- Modals -->
+  @if (posService.isCheckoutModalOpen()) {
+    <app-pos-checkout></app-pos-checkout>
+  }
+
+  @if (posService.isReceiptModalOpen()) {
+    <app-pos-receipt></app-pos-receipt>
+  }
+
+  @if (posService.isHeldOrdersModalOpen()) {
+    <app-pos-held-orders></app-pos-held-orders>
+  }
+
+  @if (posService.isHistoryModalOpen()) {
+    <app-pos-history></app-pos-history>
+  }
+
+  <!-- Floating Toast Notification -->
+  @if (posService.toast()) {
+    <div
+      class="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-2xl px-4 py-3 text-xs font-bold shadow-xl border backdrop-blur-md animate-slideUp"
+      [class.bg-emerald-600]="posService.toast()?.type === 'success'"
+      [class.text-white]="posService.toast()?.type === 'success'"
+      [class.border-emerald-500]="posService.toast()?.type === 'success'"
+      [class.bg-amber-500]="posService.toast()?.type === 'warning'"
+      [class.text-white]="posService.toast()?.type === 'warning'"
+      [class.border-amber-400]="posService.toast()?.type === 'warning'"
+      [class.bg-slate-900]="posService.toast()?.type === 'info'"
+      [class.text-white]="posService.toast()?.type === 'info'"
+      [class.border-slate-800]="posService.toast()?.type === 'info'"
+    >
+      @if (posService.toast()?.type === 'success') {
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+      } @else if (posService.toast()?.type === 'warning') {
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+        </svg>
+      }
+      <span>{{ posService.toast()?.message }}</span>
+    </div>
+  }
+</div>
