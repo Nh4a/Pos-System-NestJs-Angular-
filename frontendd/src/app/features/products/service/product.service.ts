@@ -3,72 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Product } from '../../../models/product/product';
 import { ProductFormValue } from '../../../models/product/create-product-form';
 
-const DEFAULT_PRODUCTS: Product[] = [
-  {
-    id: 1,
-    productName: 'Iced Caramel Macchiato',
-    unitPrice: 4.5,
-    stockQty: 24,
-    description: 'Freshly brewed espresso with steamed milk and vanilla syrup, topped with caramel drizzle.',
-    imageUrl: 'https://images.unsplash.com/photo-1485808191679-5f86510681a2?w=500&auto=format&fit=crop&q=60',
-  },
-  {
-    id: 2,
-    productName: 'Matcha Green Tea Latte',
-    unitPrice: 4.25,
-    stockQty: 18,
-    description: 'Smooth and creamy premium Japanese matcha green tea blended with steamed milk.',
-    imageUrl: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=500&auto=format&fit=crop&q=60',
-  },
-  {
-    id: 3,
-    productName: 'Classic Americano',
-    unitPrice: 3.0,
-    stockQty: 40,
-    description: 'Rich, full-bodied espresso shots topped with hot or cold water for a clean coffee profile.',
-    imageUrl: 'https://images.unsplash.com/photo-1551030173-122aabc4489c?w=500&auto=format&fit=crop&q=60',
-  },
-  {
-    id: 4,
-    productName: 'Butter Croissant',
-    unitPrice: 2.75,
-    stockQty: 15,
-    description: 'Flaky, golden-brown artisanal pastry baked fresh with 100% French cultured butter.',
-    imageUrl: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=500&auto=format&fit=crop&q=60',
-  },
-  {
-    id: 5,
-    productName: 'Blueberry Muffin',
-    unitPrice: 3.2,
-    stockQty: 8,
-    description: 'Moist and fluffy bakery muffin bursting with fresh wild blueberries and sugar crumble.',
-    imageUrl: 'https://images.unsplash.com/photo-1607958996333-41aef7caefaa?w=500&auto=format&fit=crop&q=60',
-  },
-  {
-    id: 6,
-    productName: 'New York Cheesecake',
-    unitPrice: 5.5,
-    stockQty: 6,
-    description: 'Creamy and rich traditional cheesecake on a buttery graham cracker crust.',
-    imageUrl: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=500&auto=format&fit=crop&q=60',
-  },
-  {
-    id: 7,
-    productName: 'Cold Brew Coffee',
-    unitPrice: 4.0,
-    stockQty: 30,
-    description: 'Steeped for 20 hours for a silky, ultra-smooth and naturally sweet coffee flavor.',
-    imageUrl: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=500&auto=format&fit=crop&q=60',
-  },
-  {
-    id: 8,
-    productName: 'Double Chocolate Cookie',
-    unitPrice: 2.25,
-    stockQty: 3,
-    description: 'Decadent Belgian cocoa cookie packed with melted dark chocolate chunks.',
-    imageUrl: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=500&auto=format&fit=crop&q=60',
-  },
-];
 
 @Injectable({
   providedIn: 'root',
@@ -87,19 +21,11 @@ export class ProductService {
     this.isLoading.set(true);
     this.httpClient.get<Product[]>(this.API_URL).subscribe({
       next: (data) => {
-        if (data && data.length > 0) {
           this.products.set([...data]);
-        } else if (this.products().length === 0) {
-          // If backend returns empty, provide demo products so POS is ready to use
-          this.products.set(DEFAULT_PRODUCTS);
-        }
         this.isLoading.set(false);
       },
       error: (err) => {
         console.warn('Backend API unavailable. Using fallback product catalog:', err.message);
-        if (this.products().length === 0) {
-          this.products.set(DEFAULT_PRODUCTS);
-        }
         this.isLoading.set(false);
       },
     });

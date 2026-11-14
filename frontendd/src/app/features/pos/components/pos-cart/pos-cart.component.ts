@@ -24,7 +24,7 @@ export class PosCartComponent {
   }
 
   public onMakeOrder(): void {
-    this.posService.makeOrderDirect();
+    this.posService.openCheckout();
   }
 
   public onTaxRateChange(event: Event): void {

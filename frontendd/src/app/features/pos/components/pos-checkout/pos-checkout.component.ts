@@ -9,6 +9,7 @@ import { PaymentMethod } from '../../models/pos.model';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './pos-checkout.component.html',
+  styleUrls: ['./pos-checkout.component.css']
 })
 export class PosCheckoutComponent {
   public posService = inject(PosService);

@@ -1,7 +1,9 @@
 <div class="flex-1 flex overflow-hidden min-h-0 min-w-0 w-full h-full relative">
   <!-- BEGIN: MainCatalogArea -->
-  <main class="flex-1 flex flex-col min-h-0 min-w-0 overflow-y-auto px-4 sm:px-6 lg:px-8 py-5 pb-24 xl:pb-6" data-purpose="product-catalog-section">
+  <main class="relative flex-1 flex flex-col min-h-0 min-w-0 overflow-y-auto px-4 sm:px-6 lg:px-8 py-5 pb-24 xl:pb-6 pt-0" data-purpose="product-catalog-section">
     <!-- Title & Search Bar Header -->
+  <div class="sticky top-0 bg-gray-50 z-100 shadow-b p-2 h-fit">
+
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
       <div>
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Sales Transaction</h1>
@@ -93,7 +95,7 @@
     </div>
 
     <!-- Categories Filter Tabs -->
-    <div class="flex items-center space-x-2.5 mb-6 overflow-x-auto pb-1" data-purpose="category-filters">
+    <div class="flex items-center space-x-2.5 mb-1" data-purpose="category-filters">
       <button
         type="button"
         (click)="setCategory('all')"
@@ -155,7 +157,7 @@
         <select
           [value]="posService.stockFilter()"
           (change)="onStockFilterChange($event)"
-          class="bg-white border border-slate-200/80 text-slate-700 text-xs font-medium rounded-full py-1.5 px-3 focus:ring-1 focus:ring-[#00B074] outline-none cursor-pointer"
+          class="bg-white border border-slate-200/80 text-slate-700 text-xs font-medium rounded-lg py-1.5 px-3 focus:ring-1 focus:ring-[#00B074] outline-none cursor-pointer"
         >
           <option value="all">All Stock</option>
           <option value="in-stock">In Stock (&gt;5)</option>
@@ -164,6 +166,7 @@
         </select>
       </div>
     </div>
+  </div>
 
     <!-- Products Grid (4 cols x rows) -->
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-4 flex-1 items-start" data-purpose="products-grid">
@@ -250,15 +253,25 @@
       </div>
     </div>
   }
+  @if(posService.isReceiptModalOpen()){
+    <app-pos-receipt></app-pos-receipt>
+  }
+  @if(posService.isCheckoutModalOpen()){
+    <app-pos-checkout></app-pos-checkout>
+  }
+
+  @if(posService.isHeldOrdersModalOpen()){
+    <app-pos-held-orders></app-pos-held-orders>
+  }
+  @if(posService.isHistoryModalOpen()){
+    <app-pos-history></app-pos-history>
+  }
 
   <!-- Modals -->
-  <!-- <app-pos-checkout></app-pos-checkout>
-  <app-pos-receipt></app-pos-receipt>
-  <app-pos-held-orders></app-pos-held-orders>
-  <app-pos-history></app-pos-history> -->
+
 
   <!-- Toast Notification Feedback -->
-  <!-- @if (posService.toast(); as t) {
+  @if (posService.toast(); as t) {
     <div
       class="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-xl px-4 py-3 text-xs font-semibold shadow-xl transition-all animate-bounce"
       [class.bg-[#002B24]]="t.type === 'success'"
@@ -277,5 +290,5 @@
       }
       <span>{{ t.message }}</span>
     </div>
-  } -->
+  }
 </div>

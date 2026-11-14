@@ -21,7 +21,7 @@ export class PosProductCardComponent {
     return this.posService.cartMap().get(this.product().id) || 0;
   });
 
-  public fallbackImage = 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=500&auto=format&fit=crop&q=60';
+  public fallbackImage = '/img/no-image.jpg';
 
   public onCardClick(): void {
     if (!this.isOutOfStock()) {

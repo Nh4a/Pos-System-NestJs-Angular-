@@ -406,6 +406,9 @@ export class PosService {
 
   public reprintReceipt(order: POSOrder): void {
     this.activeReceipt.set(order);
+    if(this.isHistoryModalOpen()){
+      this.isHistoryModalOpen.update(val=>val = false);
+    }
     this.isReceiptModalOpen.set(true);
   }
 
