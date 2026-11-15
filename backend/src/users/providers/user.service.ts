@@ -1,9 +1,10 @@
 import {
   ConflictException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  RequestTimeoutException,
 } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,12 +13,16 @@ import { Repository, Not } from 'typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto.js';
 import { UpdateUserDto } from '../dtos/update-user.dto.js';
 import { User } from '../user.entity.js';
+import { HashingProvider } from '../../auth/providers/hashing.provider.js';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+
+    @Inject(HashingProvider)
+    private readonly hashingProvider: HashingProvider,
   ) {}
 
   // CREATE USER
@@ -27,24 +32,17 @@ export class UserService {
       const existUser = await this.userRepo.findOneBy({
         gmail: dto.gmail,
       });
-      console.log(++n);
       if (existUser) {
         throw new ConflictException('Gmail already exists');
       }
-      console.log(++n);
-      
-      const newUser = this.userRepo.create(dto);
-      console.log(++n);
-      console.log(dto);
-      console.log(newUser);
-      
-      const savedUser = await this.userRepo.save(newUser);
-      console.log(++n);
-      
-      const { password, ...result } = savedUser;
-      console.log(++n);
 
-      return result;
+      const createUser = {};
+
+      const password = await this.hashingProvider.hashPassword(dto.password);
+
+      const newUser = this.userRepo.create({ ...dto, password });
+
+      return this.userRepo.save(newUser);
     } catch (error) {
       if (error instanceof ConflictException) {
         throw error;
