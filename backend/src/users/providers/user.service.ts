@@ -94,6 +94,21 @@ export class UserService {
     }
   }
 
+  // GET USER BY ID
+  public async findUserByEmail(gmail: string) {
+    const user = await this.userRepo.findOne({
+      where: { gmail },
+      select: {
+        id: true,
+        userName: true,
+        gmail: true,
+        password: true,
+      },
+    });
+
+    return user;
+  }
+
   // UPDATE USER
   public async updateUser(id: number, dto: UpdateUserDto) {
     try {
