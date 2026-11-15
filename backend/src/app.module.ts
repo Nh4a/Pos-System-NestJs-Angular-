@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ProductModule } from './product/product.module.js';
 import { CategoriesModule } from './categories/categories.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { UsersModule } from './users/users.module.js';
 import databaseConfig from './config/database.config.js';
 import cloudinaryConfig from './config/cloudinary.config.js';
 
@@ -38,6 +39,7 @@ import cloudinaryConfig from './config/cloudinary.config.js';
     ProductModule,
     CategoriesModule,
     AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
