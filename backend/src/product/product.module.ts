@@ -15,5 +15,6 @@ import cloudinaryConfig from '../config/cloudinary.config.js';
     TypeOrmModule.forFeature([Product]),
     ConfigModule.forFeature(cloudinaryConfig),
   ],
+  exports: [ProductService],
 })
 export class ProductModule {}

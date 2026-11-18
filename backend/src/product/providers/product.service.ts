@@ -1,10 +1,11 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
   RequestTimeoutException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
 import { Product } from '../product.entity.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto } from '../dtos/create-product.dto.js';
@@ -61,18 +62,18 @@ export class ProductService {
           id: 'desc',
         },
       });
-       function name(p: any) {
+      function name(p: any) {
         return new Promise((resovle) => {
           setTimeout(() => {
             resovle(products);
           }, 3000);
         });
       }
-      console.log('before')
+      console.log('before');
 
-      const p =await name(products) 
-      console.log('after')
-      return p
+      const p = await name(products);
+      console.log('after');
+      return p;
     } catch (error) {
       throw new RequestTimeoutException(
         "Can't fetch product now please try latter",
@@ -169,4 +170,56 @@ export class ProductService {
 
     return await this.productRepo.save(productToUpdate);
   }
+
+  public async findManyProductById(id: number[]) {
+    const products = await this.productRepo.find({
+      where: { id: In([...id]) },
+    });
+
+    return products;
+  }
+
+  public async findAndLockProducts(
+    manager: EntityManager,
+    productIds: number[],
+  ) {
+    return manager
+      .getRepository(Product)
+      .createQueryBuilder('product')
+      .where('product.id IN(:...productIds)', { productIds })
+      .setLock('pessimistic_write')
+      .getMany();
+  }
+
+  public async deductStockQuantity(
+    manager: EntityManager,
+    products: Product[],
+    requestItemMap: Map<number, number>,
+  ) {
+    for (const product of products) {
+      const reqestQuantity = requestItemMap.get(product.id)!;
+      if (product.stockQty < reqestQuantity) {
+        throw new BadRequestException(
+          `Insufficient stock for ${product.productName}. Available: ${product.stockQty}, Requested: ${reqestQuantity}`,
+        );
+      }
+    }
+
+    for (const product of products) {
+      const requestedQuantity = requestItemMap.get(product.id)!;
+
+      product.stockQty -= requestedQuantity;
+    }
+
+    return manager.getRepository(Product).save(products);
+  }
+
+  public deductStock(id: number, decreaseStock: number){
+    try{
+
+    }catch(error){
+      
+    }
+  }
+
 }

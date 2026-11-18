@@ -140,36 +140,36 @@ export class ProductService {
    * Deduct stock when an order is completed in POS.
    * Updates local signal immediately and sends PUT requests to update backend inventory.
    */
-  public deductStock(soldItems: { productId: number; quantity: number }[]): void {
-    const soldMap = new Map<number, number>();
-    soldItems.forEach((item) => {
-      soldMap.set(item.productId, (soldMap.get(item.productId) || 0) + item.quantity);
-    });
-
-    this.products.update((current) =>
-      current.map((prod) => {
-        if (soldMap.has(prod.id)) {
-          const qtyToDeduct = soldMap.get(prod.id)!;
-          const newStock = Math.max(0, prod.stockQty - qtyToDeduct);
-
-          // Update backend if online
-          const frmData = new FormData();
-          frmData.append('productName', prod.productName);
-          frmData.append('unitPrice', String(prod.unitPrice));
-          frmData.append('stockQty', String(newStock));
-          if (prod.description) {
-            frmData.append('description', prod.description);
-          }
-
-          this.httpClient.put<Product>(`${this.API_URL}/${prod.id}`, frmData).subscribe({
-            next: (res) => console.log(`Stock synced for product #${prod.id}:`, res.stockQty),
-            error: (err) => console.warn(`Stock update offline for #${prod.id}, local stock saved.`),
-          });
-
-          return { ...prod, stockQty: newStock };
-        }
-        return prod;
-      })
-    );
-  }
+  // public deductStock(soldItems: { productId: number; quantity: number }[]): void {
+  //   const soldMap = new Map<number, number>();
+  //   soldItems.forEach((item) => {
+  //     soldMap.set(item.productId, (soldMap.get(item.productId) || 0) + item.quantity);
+  //   });
+  //
+  //   this.products.update((current) =>
+  //     current.map((prod) => {
+  //       if (soldMap.has(prod.id)) {
+  //         const qtyToDeduct = soldMap.get(prod.id)!;
+  //         const newStock = Math.max(0, prod.stockQty - qtyToDeduct);
+  //
+  //         // Update backend if online
+  //         const frmData = new FormData();
+  //         frmData.append('productName', prod.productName);
+  //         frmData.append('unitPrice', String(prod.unitPrice));
+  //         frmData.append('stockQty', String(newStock));
+  //         if (prod.description) {
+  //           frmData.append('description', prod.description);
+  //         }
+  //
+  //         this.httpClient.put<Product>(`${this.API_URL}/${prod.id}`, frmData).subscribe({
+  //           next: (res) => console.log(`Stock synced for product #${prod.id}:`, res.stockQty),
+  //           error: (err) => console.warn(`Stock update offline for #${prod.id}, local stock saved.`),
+  //         });
+  //
+  //         return { ...prod, stockQty: newStock };
+  //       }
+  //       return prod;
+  //     })
+  //   );
+  // }
 }

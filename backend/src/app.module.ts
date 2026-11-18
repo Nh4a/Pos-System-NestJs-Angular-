@@ -7,6 +7,8 @@ import { ProductModule } from './product/product.module.js';
 import { CategoriesModule } from './categories/categories.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { UsersModule } from './users/users.module.js';
+import { OrdersModule } from './orders/orders.module.js';
+import { OrdersItemModule } from './orders-item/orders-item.module.js';
 import databaseConfig from './config/database.config.js';
 import cloudinaryConfig from './config/cloudinary.config.js';
 
@@ -40,6 +42,8 @@ import cloudinaryConfig from './config/cloudinary.config.js';
     CategoriesModule,
     AuthModule,
     UsersModule,
+    OrdersModule,
+    OrdersItemModule,
   ],
   controllers: [AppController],
   providers: [AppService],

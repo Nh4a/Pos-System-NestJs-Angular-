@@ -375,7 +375,7 @@ export class PosService {
       productId: i.product.id,
       quantity: i.quantity,
     }));
-    this.productService.deductStock(soldItems);
+    // this.productService.deductStock(soldItems);
 
     // 2. Save order to history
     this.orderHistory.update((list) => [order, ...list]);

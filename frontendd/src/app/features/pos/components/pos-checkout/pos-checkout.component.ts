@@ -3,16 +3,18 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PosService } from '../../services/pos.service';
 import { PaymentMethod } from '../../models/pos.model';
+import { Order } from '../../services/order';
 
 @Component({
   selector: 'app-pos-checkout',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './pos-checkout.component.html',
-  styleUrls: ['./pos-checkout.component.css']
+  styleUrls: ['./pos-checkout.component.css'],
 })
 export class PosCheckoutComponent {
   public posService = inject(PosService);
+  public orderService = inject(Order);
 
   public selectedMethod = signal<PaymentMethod>('cash');
   public cashTendered = signal<number>(0);
@@ -32,7 +34,9 @@ export class PosCheckoutComponent {
       if (bill >= total) options.add(bill);
     });
 
-    return Array.from(options).sort((a, b) => a - b).slice(0, 5);
+    return Array.from(options)
+      .sort((a, b) => a - b)
+      .slice(0, 5);
   });
 
   public changeAmount = computed(() => {
@@ -70,9 +74,13 @@ export class PosCheckoutComponent {
 
   public submitPayment(): void {
     if (!this.isCashSufficient()) {
-      this.posService.showToast('Please enter an amount greater than or equal to total.', 'warning');
+      this.posService.showToast(
+        'Please enter an amount greater than or equal to total.',
+        'warning',
+      );
       return;
     }
+    this.orderService.createOrder(this.selectedMethod(), this.cashTendered());
     this.posService.completeSale(this.selectedMethod(), this.cashTendered());
   }
 }

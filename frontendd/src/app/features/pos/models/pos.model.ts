@@ -8,6 +8,25 @@ export interface CartItem {
   subtotal: number;
 }
 
+export interface CreateOrderResponse {
+  message: string;
+  order: {
+    receiptNumber: string;
+    itemCount: number;
+    total: number;
+    paymentMethod: PaymentMethod;
+    createdAt: Date;
+  };
+
+  orderItems: order_item[];
+}
+export interface order_item {
+  quantity: number;
+  price: number;
+  subtotal: number;
+  productName: string;
+}
+
 export interface POSOrder {
   orderId: string;
   receiptNumber: string;

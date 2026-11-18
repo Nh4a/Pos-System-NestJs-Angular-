@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PosService } from '../../services/pos.service';
+import { Order } from '../../services/order';
 
 @Component({
   selector: 'app-pos-receipt',
@@ -10,6 +11,7 @@ import { PosService } from '../../services/pos.service';
 })
 export class PosReceiptComponent {
   public posService = inject(PosService);
+  public orderService = inject(Order);
 
   public printReceipt(): void {
     window.print();
