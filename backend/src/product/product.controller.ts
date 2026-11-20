@@ -21,21 +21,8 @@ import {
 } from '@nestjs/platform-express/multer/interfaces/multer-options.interface.js';
 import { memoryStorage } from 'multer';
 import { UpdateProductDto } from './dtos/update-product.dto.js';
-
-const multerLimit: MulterLimits = {
-  fileSize: 1024 * 1024 * 5,
-};
-const multerOption: MulterOptions = {
-  storage: memoryStorage(),
-  limits: multerLimit,
-  fileFilter: (req, file, cb) => {
-    const allowFile = ['image/png', 'image/jpg', 'image/webp'];
-    if (!allowFile.includes(file.mimetype)) {
-      throw cb(new Error('Only JPG, PNG and WEBP images are allowed'), false);
-    }
-    return cb(null, true);
-  },
-};
+import { ImageUploadeService } from '../image-uploads/providers/image-uploade.service.js';
+import { multerOption } from '../common/configs/multer.config.js';
 
 @Controller('api/product')
 export class ProductController {
@@ -44,6 +31,7 @@ export class ProductController {
      *inject product service
      */
     private readonly productService: ProductService,
+    private readonly imageUploadService: ImageUploadeService
   ) {}
 
   @Post()

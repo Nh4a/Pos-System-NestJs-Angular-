@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module.js';
 import { UsersModule } from './users/users.module.js';
 import { OrdersModule } from './orders/orders.module.js';
 import { OrdersItemModule } from './orders-item/orders-item.module.js';
+import { ImageUploadsModule } from './image-uploads/image-uploads.module.js';
 import databaseConfig from './config/database.config.js';
 import cloudinaryConfig from './config/cloudinary.config.js';
 
@@ -44,6 +45,7 @@ import cloudinaryConfig from './config/cloudinary.config.js';
     UsersModule,
     OrdersModule,
     OrdersItemModule,
+    ImageUploadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

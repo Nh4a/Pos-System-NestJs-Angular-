@@ -3,17 +3,17 @@ import { ProductController } from './product.controller.js';
 import { ProductService } from './providers/product.service.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from './product.entity.js';
-import { UploadImageProvider } from './providers/upload-image.provider.js';
-import { DataSource } from 'typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import cloudinaryConfig from '../config/cloudinary.config.js';
+import { ImageUploadsModule } from '../image-uploads/image-uploads.module.js';
 
 @Module({
   controllers: [ProductController],
-  providers: [ProductService, UploadImageProvider],
+  providers: [ProductService],
   imports: [
     TypeOrmModule.forFeature([Product]),
     ConfigModule.forFeature(cloudinaryConfig),
+    ImageUploadsModule,
   ],
   exports: [ProductService],
 })

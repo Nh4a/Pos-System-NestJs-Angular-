@@ -9,9 +9,9 @@ import { EntityManager, In, Repository } from 'typeorm';
 import { Product } from '../product.entity.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto } from '../dtos/create-product.dto.js';
-import { CloudinaryImageData } from '../interfaces/image-data.interface.js';
-import { UploadImageProvider } from './upload-image.provider.js';
 import { UpdateProductDto } from '../dtos/update-product.dto.js';
+import { ImageUploadeService } from '../../image-uploads/providers/image-uploade.service.js';
+import { CloudinaryImageData } from '../../image-uploads/interfaces/image-data.interface.js';
 
 @Injectable()
 export class ProductService {
@@ -25,7 +25,7 @@ export class ProductService {
      * inject upload provider
      */
 
-    private readonly uploadProvider: UploadImageProvider,
+    private readonly uploadService: ImageUploadeService,
   ) {}
 
   public async createOneProduct(
@@ -35,7 +35,7 @@ export class ProductService {
     let imageUploaded: undefined | Partial<CloudinaryImageData> = undefined;
     if (file) {
       try {
-        imageUploaded = await this.uploadProvider.upload(file);
+        imageUploaded = await this.uploadService.upload(file, 'nest-pos');
       } catch (error) {
         console.log(error);
         throw new ConflictException('Upload image failed');
@@ -62,18 +62,8 @@ export class ProductService {
           id: 'desc',
         },
       });
-      function name(p: any) {
-        return new Promise((resovle) => {
-          setTimeout(() => {
-            resovle(products);
-          }, 3000);
-        });
-      }
-      console.log('before');
 
-      const p = await name(products);
-      console.log('after');
-      return p;
+      return products;
     } catch (error) {
       throw new RequestTimeoutException(
         "Can't fetch product now please try latter",
@@ -97,7 +87,7 @@ export class ProductService {
 
     if (deleteProduct.imagePublicId) {
       try {
-        await this.uploadProvider.delete(deleteProduct.imagePublicId);
+        await this.uploadService.delete(deleteProduct.imagePublicId);
       } catch (error) {
         throw new RequestTimeoutException(
           "can't proccess the request right now",
@@ -135,7 +125,7 @@ export class ProductService {
     let imageData: CloudinaryImageData | null = null;
     if (file) {
       try {
-        imageData = await this.uploadProvider.upload(file);
+        imageData = await this.uploadService.upload(file, 'nest-pos');
       } catch (error) {
         throw new RequestTimeoutException(
           "Can't process the request please try later",
@@ -145,7 +135,7 @@ export class ProductService {
 
     if (productToUpdate.imageUrl && productToUpdate.imagePublicId) {
       try {
-        await this.uploadProvider.delete(productToUpdate.imagePublicId);
+        await this.uploadService.delete(productToUpdate.imagePublicId);
       } catch (error) {
         throw new RequestTimeoutException(
           "Can't process the request please try later",
@@ -213,13 +203,4 @@ export class ProductService {
 
     return manager.getRepository(Product).save(products);
   }
-
-  public deductStock(id: number, decreaseStock: number){
-    try{
-
-    }catch(error){
-      
-    }
-  }
-
 }
