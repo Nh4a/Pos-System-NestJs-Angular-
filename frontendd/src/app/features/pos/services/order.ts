@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { PosService } from './pos.service';
 import { CreateOrderResponse, PaymentMethod } from '../models/pos.model';
 
@@ -12,6 +12,7 @@ export class Order {
     private readonly posService: PosService,
   ) {}
   public createOrderResponse = signal<CreateOrderResponse | null>(null);
+  public createOrderError = signal<string|null>(null);
 
   public createOrder(paymentMethod: PaymentMethod, cashTendered:number) {
     const productToOrder = [...this.posService.cart()].map((item) => ({
@@ -30,6 +31,9 @@ export class Order {
         console.log(response);
         console.log('createOrderResponse', this.createOrderResponse());
       },
+      error: (response: HttpErrorResponse) => {
+        this.createOrderError.set(response.error.message);
+      }
     });
   }
 }

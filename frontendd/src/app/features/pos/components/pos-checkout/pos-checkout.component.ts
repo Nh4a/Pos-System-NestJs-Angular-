@@ -81,6 +81,6 @@ export class PosCheckoutComponent {
       return;
     }
     this.orderService.createOrder(this.selectedMethod(), this.cashTendered());
-    this.posService.completeSale(this.selectedMethod(), this.cashTendered());
+    // this.posService.completeSale(this.selectedMethod(), this.cashTendered());
   }
 }

@@ -10,6 +10,7 @@ import { PosReceiptComponent } from './components/pos-receipt/pos-receipt.compon
 import { PosHeldOrdersComponent } from './components/pos-held-orders/pos-held-orders.component';
 import { PosHistoryComponent } from './components/pos-history/pos-history.component';
 import { ProductSortOption, ProductStockFilter } from './models/pos.model';
+import { CategoryService } from '../../category/service/category-service';
 
 @Component({
   selector: 'app-pos',
@@ -23,7 +24,7 @@ import { ProductSortOption, ProductStockFilter } from './models/pos.model';
     PosCheckoutComponent,
     PosReceiptComponent,
     PosHeldOrdersComponent,
-    PosHistoryComponent,
+    PosHistoryComponent
   ],
   templateUrl: './pos.component.html',
   styleUrl: './pos.component.css',
@@ -33,12 +34,14 @@ import { ProductSortOption, ProductStockFilter } from './models/pos.model';
 })
 export class PosComponent implements OnInit, OnDestroy {
   public posService = inject(PosService);
+  public categoryService = inject(CategoryService);
 
   public currentTime = signal<string>('');
   public isMobileCartOpen = signal<boolean>(false);
   private clockInterval: any;
 
   ngOnInit(): void {
+    this.categoryService.fetchCategory();
     this.updateClock();
     this.clockInterval = setInterval(() => this.updateClock(), 1000);
   }

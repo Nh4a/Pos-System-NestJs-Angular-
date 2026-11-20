@@ -110,19 +110,28 @@
         All Products
       </button>
 
-      <button
-        type="button"
-        (click)="setCategory('foods')"
-        [class.bg-[#00B074]]="posService.selectedCategory() === 'foods'"
-        [class.text-white]="posService.selectedCategory() === 'foods'"
-        [class.shadow-sm]="posService.selectedCategory() === 'foods'"
-        [class.bg-white]="posService.selectedCategory() !== 'foods'"
-        [class.text-slate-600]="posService.selectedCategory() !== 'foods'"
-        [class.hover:bg-slate-100]="posService.selectedCategory() !== 'foods'"
-        class="px-5 py-2 rounded-full text-xs font-semibold border border-slate-200/80 transition cursor-pointer shrink-0"
-      >
-        Foods
-      </button>
+      @for(item of categoryService.categories(); track $index){
+        <button
+          type="button"
+          (click)="setCategory(item.categoryName)"
+          [class.bg-[#00B074]]="posService.selectedCategory() === item.categoryName"
+          [class.text-white]="posService.selectedCategory() === item.categoryName"
+          [class.shadow-sm]="posService.selectedCategory() === item.categoryName"
+          [class.bg-white]="posService.selectedCategory() !== item.categoryName"
+          [class.text-slate-600]="posService.selectedCategory() !== item.categoryName"
+          [class.hover:bg-slate-100]="posService.selectedCategory() !== item.categoryName"
+          class="px-5 py-2 rounded-full text-xs font-semibold border border-slate-200/80 transition cursor-pointer shrink-0"
+        >
+          <div class="flex items-center gap-2">
+            {{item.categoryName}}
+            @if(item.imageUrl){
+              <img class="h-[30px] shadow" [src]="item.imageUrl" alt="">
+            }
+          </div>
+
+        </button>
+
+      }
 
       <button
         type="button"

@@ -88,7 +88,10 @@
           </button>
         </div>
       </div>
-
+<!--  create order error message show  -->
+      @if(orderService.createOrderError()){
+        <p>{{orderService.createOrderError()}}</p>
+      }
       <!-- Specific Method Panel -->
       @if (selectedMethod() === 'cash') {
         <div class="space-y-4 rounded-lg bg-slate-50 p-4 border border-slate-200">
