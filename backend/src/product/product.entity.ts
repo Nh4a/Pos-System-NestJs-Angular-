@@ -50,5 +50,5 @@ export class Product {
     nullable: true,
   })
   @JoinColumn({ name: 'categoryId' })
-  category: Relation<Category>;
+  category?: Relation<Category>;
 }

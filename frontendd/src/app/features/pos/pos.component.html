@@ -132,35 +132,6 @@
         </button>
 
       }
-
-      <button
-        type="button"
-        (click)="setCategory('beverages')"
-        [class.bg-[#00B074]]="posService.selectedCategory() === 'beverages'"
-        [class.text-white]="posService.selectedCategory() === 'beverages'"
-        [class.shadow-sm]="posService.selectedCategory() === 'beverages'"
-        [class.bg-white]="posService.selectedCategory() !== 'beverages'"
-        [class.text-slate-600]="posService.selectedCategory() !== 'beverages'"
-        [class.hover:bg-slate-100]="posService.selectedCategory() !== 'beverages'"
-        class="px-5 py-2 rounded-full text-xs font-semibold border border-slate-200/80 transition cursor-pointer shrink-0"
-      >
-        Beverages
-      </button>
-
-      <button
-        type="button"
-        (click)="setCategory('others')"
-        [class.bg-[#00B074]]="posService.selectedCategory() === 'others'"
-        [class.text-white]="posService.selectedCategory() === 'others'"
-        [class.shadow-sm]="posService.selectedCategory() === 'others'"
-        [class.bg-white]="posService.selectedCategory() !== 'others'"
-        [class.text-slate-600]="posService.selectedCategory() !== 'others'"
-        [class.hover:bg-slate-100]="posService.selectedCategory() !== 'others'"
-        class="px-5 py-2 rounded-full text-xs font-semibold border border-slate-200/80 transition cursor-pointer shrink-0"
-      >
-        Others
-      </button>
-
       <!-- Stock filter pill dropdown on far right -->
       <div class="ml-auto pl-2 flex items-center gap-2 shrink-0">
         <select

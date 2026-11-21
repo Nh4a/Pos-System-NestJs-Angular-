@@ -8,6 +8,7 @@ import { ImageUploadsModule } from '../image-uploads/image-uploads.module.js';
 @Module({
   controllers: [CategoryController],
   providers: [CategoryService],
-  imports: [TypeOrmModule.forFeature([Category]), ImageUploadsModule]
+  imports: [TypeOrmModule.forFeature([Category]), ImageUploadsModule],
+  exports:[CategoryService]
 })
 export class CategoriesModule {}

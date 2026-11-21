@@ -6,6 +6,7 @@ import { Product } from './product.entity.js';
 import { ConfigModule } from '@nestjs/config';
 import cloudinaryConfig from '../config/cloudinary.config.js';
 import { ImageUploadsModule } from '../image-uploads/image-uploads.module.js';
+import { CategoriesModule } from '../categories/categories.module.js';
 
 @Module({
   controllers: [ProductController],
@@ -14,6 +15,7 @@ import { ImageUploadsModule } from '../image-uploads/image-uploads.module.js';
     TypeOrmModule.forFeature([Product]),
     ConfigModule.forFeature(cloudinaryConfig),
     ImageUploadsModule,
+    CategoriesModule
   ],
   exports: [ProductService],
 })

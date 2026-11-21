@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   RequestTimeoutException,
 } from '@nestjs/common';
@@ -12,6 +13,8 @@ import { CreateProductDto } from '../dtos/create-product.dto.js';
 import { UpdateProductDto } from '../dtos/update-product.dto.js';
 import { ImageUploadeService } from '../../image-uploads/providers/image-uploade.service.js';
 import { CloudinaryImageData } from '../../image-uploads/interfaces/image-data.interface.js';
+import { CategoryService } from '../../categories/providers/category.service.js';
+import { Category } from '../../categories/category.entity.js';
 
 @Injectable()
 export class ProductService {
@@ -24,8 +27,11 @@ export class ProductService {
     /**
      * inject upload provider
      */
-
     private readonly uploadService: ImageUploadeService,
+    /**
+     * inject category service
+     */
+    private readonly categoryService: CategoryService,
   ) {}
 
   public async createOneProduct(
@@ -33,6 +39,7 @@ export class ProductService {
     file?: Express.Multer.File,
   ) {
     let imageUploaded: undefined | Partial<CloudinaryImageData> = undefined;
+    let _category: Category | undefined = undefined;
     if (file) {
       try {
         imageUploaded = await this.uploadService.upload(file, 'nest-pos');
@@ -42,11 +49,18 @@ export class ProductService {
       }
     }
 
+    if (createProductDto.categoryId) {
+      _category = await this.categoryService.getCategoryById(
+        createProductDto.categoryId,
+      );
+    }
+
     try {
       const newProduct = this.productRepo.create({
         ...createProductDto,
         imageUrl: imageUploaded?.imageUrl,
         imagePublicId: imageUploaded?.imagePublicId,
+        category: _category,
       });
       return await this.productRepo.save(newProduct);
     } catch (error) {
@@ -57,15 +71,25 @@ export class ProductService {
 
   public async getAllProduct() {
     try {
-      const products = await this.productRepo.find({
-        order: {
-          id: 'desc',
-        },
-      });
-
+      const products = await this.productRepo
+        .createQueryBuilder('product')
+        .leftJoin('product.category', 'category')
+        .select([
+          'product.id AS "id"',
+          'product.productName AS "productName"',
+          'product.unitPrice AS "unitPrice"',
+          'product.imageUrl AS "imageUrl"',
+          'product.imagePublicId AS "imagePublicId"',
+          'product.stockQty AS "stockQty"',
+          'product.description AS "description"',
+          'category.categoryName AS "categoryName"',
+        ])
+        .orderBy('product.id', 'DESC')
+        .getRawMany();
+      console.log('get');
       return products;
     } catch (error) {
-      throw new RequestTimeoutException(
+      throw new InternalServerErrorException(
         "Can't fetch product now please try latter",
       );
     }
@@ -157,6 +181,14 @@ export class ProductService {
     productToUpdate.imagePublicId = imageData?.imagePublicId
       ? imageData.imagePublicId
       : undefined;
+
+    if (updateProductDto.categoryId) {
+      const category = await this.categoryService.getCategoryById(
+        updateProductDto.categoryId,
+      );
+      console.log(category);
+      productToUpdate.category = category;
+    }
 
     return await this.productRepo.save(productToUpdate);
   }

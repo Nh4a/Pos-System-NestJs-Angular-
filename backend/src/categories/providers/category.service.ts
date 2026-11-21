@@ -129,8 +129,15 @@ export class CategoryService {
   //GET BY ID
   public async getProductById(id: number) {
     try {
-      return await this.categoryRepo.findOneBy({ id });
+      const category = await this.categoryRepo.findOneBy({ id });
+      if (category) {
+        throw new NotFoundException();
+      }
+      return category;
     } catch (error) {
+      if (error instanceof NotFoundException)
+        throw new NotFoundException('Category not found');
+
       throw new InternalServerErrorException(error);
     }
   }
